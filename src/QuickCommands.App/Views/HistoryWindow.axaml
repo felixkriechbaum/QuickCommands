@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QuickCommands.App.ViewModels"
+        xmlns:r="using:QuickCommands.App.Resources"
+        x:Class="QuickCommands.App.Views.HistoryWindow"
+        x:DataType="vm:HistoryViewModel"
+        Title="{x:Static r:Strings.History_Title}"
+        Icon="/Assets/icon.ico"
+        Width="1000" Height="620" MinWidth="780" MinHeight="460"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <DockPanel Margin="24,20">
+    <TextBlock DockPanel.Dock="Top" Classes="heading" Text="{x:Static r:Strings.History_Title}" />
+    <TextBlock DockPanel.Dock="Top" Classes="muted" TextWrapping="Wrap" Text="{x:Static r:Strings.History_Hint}" Margin="0,4,0,14" />
+
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,8,Auto,*,Auto" Margin="0,16,0,0">
+      <Button Content="{x:Static r:Strings.History_RestoreCommand}" Click="OnRestoreCommand" IsEnabled="{Binding CanRestoreCommand}" />
+      <Button Grid.Column="2" Content="{x:Static r:Strings.History_RestoreAll}" Click="OnRestoreAll" IsEnabled="{Binding CanRestoreAll}" />
+      <Button Grid.Column="4" Content="{x:Static r:Strings.Action_Close}" Click="OnClose" IsCancel="True" />
+    </Grid>
+
+    <Panel>
+      <TextBlock IsVisible="{Binding IsEmpty}" Classes="muted" Text="{x:Static r:Strings.History_Empty}"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+      <Grid ColumnDefinitions="260,16,280,16,*" IsVisible="{Binding !IsEmpty}">
+        <ListBox Classes="commands" ItemsSource="{Binding Entries}" SelectedItem="{Binding Selected}" Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:HistoryEntryViewModel">
+              <StackPanel>
+                <TextBlock Text="{Binding Label}" FontWeight="SemiBold" />
+                <TextBlock Classes="muted" FontSize="12" Margin="0,3,0,0" Text="{Binding Summary}" FontFamily="{StaticResource QcMonoFont}" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ListBox Grid.Column="2" Classes="commands" ItemsSource="{Binding Commands}" SelectedItem="{Binding SelectedCommand}" Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:HistoryCommandViewModel">
+              <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                <TextBlock Text="{Binding Name}" FontFamily="{StaticResource QcMonoFont}" FontWeight="SemiBold" />
+                <Border Grid.Column="1" Classes="badge" Classes.ps="{Binding IsPowerShell}" Classes.sh="{Binding IsSh}">
+                  <TextBlock Text="{Binding Badge}" />
+                </Border>
+                <TextBlock Grid.Row="1" Classes="muted" FontSize="12" Margin="0,3,0,0" Text="{Binding StateLabel}"
+                           FontWeight="{Binding IsDifferent, Converter={x:Static vm:Converters.BoldIfTrue}}" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Border Grid.Column="4" Classes="code" VerticalAlignment="Stretch">
+          <ScrollViewer>
+            <SelectableTextBlock Text="{Binding Preview}" TextWrapping="Wrap" />
+          </ScrollViewer>
+        </Border>
+      </Grid>
+    </Panel>
+  </DockPanel>
+</Window>

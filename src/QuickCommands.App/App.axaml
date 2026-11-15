@@ -63,5 +63,60 @@
     <Style Selector="Button.danger">
       <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
     </Style>
+
+    <Style Selector="ListBox.commands ListBoxItem">
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Margin" Value="0,1" />
+    </Style>
+
+    <!-- Shell badge (ps / cmd / sh) -->
+    <Style Selector="Border.badge">
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="6,1" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Background" Value="#5B6270" />
+    </Style>
+    <Style Selector="Border.badge.ps">
+      <Setter Property="Background" Value="#2F5DA8" />
+    </Style>
+    <Style Selector="Border.badge.sh">
+      <Setter Property="Background" Value="#2E7D4F" />
+    </Style>
+    <Style Selector="Border.badge > TextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
+    </Style>
+
+    <!-- Warning / error message box -->
+    <Style Selector="Border.conflict">
+      <Setter Property="Background" Value="{DynamicResource QcWarningBackground}" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+    <Style Selector="Border.conflict > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource QcWarningText}" />
+    </Style>
+    <Style Selector="Border.conflict.error">
+      <Setter Property="Background" Value="{DynamicResource QcErrorBackground}" />
+    </Style>
+    <Style Selector="Border.conflict.error > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
+    </Style>
+
+    <!-- Read-only code preview -->
+    <Style Selector="Border.code">
+      <Setter Property="Background" Value="{DynamicResource QcEditorBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource QcBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="10,8" />
+    </Style>
+    <Style Selector="Border.code TextBlock, Border.code SelectableTextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
   </Application.Styles>
 </Application>

@@ -1,7 +1,7 @@
 using System.ComponentModel;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Styling;
+using AvaloniaEdit.Rendering;
 using AvaloniaEdit.TextMate;
 using QuickCommands.App.Resources;
 using QuickCommands.App.ViewModels;
@@ -14,6 +14,7 @@ public partial class MainWindow : Window, IDialogService
 {
     private readonly RegistryOptions _registry;
     private readonly TextMate.Installation _textMate;
+    private readonly SyntaxErrorRenderer _errorRenderer = new();
     private CommandItemViewModel? _editing;
     private bool _updatingEditor;
     private bool _closeConfirmed;
@@ -24,6 +25,7 @@ public partial class MainWindow : Window, IDialogService
 
         _registry = new RegistryOptions(IsDark ? ThemeName.DarkPlus : ThemeName.LightPlus);
         _textMate = Editor.InstallTextMate(_registry);
+        Editor.TextArea.TextView.BackgroundRenderers.Add(_errorRenderer);
         Editor.TextChanged += OnEditorTextChanged;
         ActualThemeVariantChanged += (_, _) => _textMate.SetTheme(_registry.LoadTheme(IsDark ? ThemeName.DarkPlus : ThemeName.LightPlus));
 
@@ -68,8 +70,9 @@ public partial class MainWindow : Window, IDialogService
         _updatingEditor = false;
         Editor.IsEnabled = item is not null;
         ApplyGrammar(item?.Language.Value ?? ShellLanguage.PowerShell);
+        ShowSyntaxErrors(item);
 
-        if (item is { IsNew: true })
+        if (item is { IsNew: true } && string.IsNullOrEmpty(item.Name))
             NameBox.Focus();
     }
 
@@ -77,14 +80,26 @@ public partial class MainWindow : Window, IDialogService
     {
         if (sender is not CommandItemViewModel item)
             return;
-        if (e.PropertyName == nameof(CommandItemViewModel.Language))
-            ApplyGrammar(item.Language.Value);
-        else if (e.PropertyName == nameof(CommandItemViewModel.Script) && Editor.Text != item.Script)
+        switch (e.PropertyName)
         {
-            _updatingEditor = true;
-            Editor.Text = item.Script;
-            _updatingEditor = false;
+            case nameof(CommandItemViewModel.Language):
+                ApplyGrammar(item.Language.Value);
+                break;
+            case nameof(CommandItemViewModel.Script) when Editor.Text != item.Script:
+                _updatingEditor = true;
+                Editor.Text = item.Script;
+                _updatingEditor = false;
+                break;
+            case nameof(CommandItemViewModel.SyntaxErrors):
+                ShowSyntaxErrors(item);
+                break;
         }
+    }
+
+    private void ShowSyntaxErrors(CommandItemViewModel? item)
+    {
+        _errorRenderer.Errors = item?.SyntaxErrors ?? [];
+        Editor.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
     }
 
     private void OnEditorTextChanged(object? sender, EventArgs e)
@@ -123,6 +138,9 @@ public partial class MainWindow : Window, IDialogService
     public Task<bool> ConfirmAsync(string title, string message, string confirmText) =>
         new MessageDialog(title, message, confirmText, Strings.Action_Cancel).ShowDialog<bool>(this);
 
+    public Task ShowMessageAsync(string title, string message) =>
+        new MessageDialog(title, message, Strings.Action_Ok, null).ShowDialog<bool>(this);
+
     public async Task<bool> RunSetupAsync()
     {
         var vm = new ShellSetupViewModel(App.Services, isFirstRun: true);
@@ -140,6 +158,15 @@ public partial class MainWindow : Window, IDialogService
         var vm = new ShellSetupViewModel(App.Services, isFirstRun: false);
         return await new SettingsWindow { DataContext = vm }.ShowDialog<bool>(this);
     }
+
+    public Task<QuickCommand?> PickTemplateAsync() =>
+        new TemplatesWindow { DataContext = new TemplatesViewModel(App.Services) }.ShowDialog<QuickCommand?>(this);
+
+    public Task<bool> ShowImportAsync(IReadOnlyList<QuickCommand> existing) =>
+        new ImportWindow { DataContext = new ImportViewModel(App.Services, existing) }.ShowDialog<bool>(this);
+
+    public Task<bool> ShowHistoryAsync(IReadOnlyList<QuickCommand> current) =>
+        new HistoryWindow { DataContext = new HistoryViewModel(App.Services, current) }.ShowDialog<bool>(this);
 
     internal static Task ShowErrorsAsync(Window owner, ApplyResult result)
     {

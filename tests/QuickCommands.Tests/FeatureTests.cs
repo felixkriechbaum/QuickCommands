@@ -327,3 +327,53 @@ public class TrialRunnerTests
         Assert.Contains("from-bashrc\n\n> greet 'big world'\nHello big world", run.StdOut.ReplaceLineEndings("\n"));
     }
 }
+
+public class ProfileScanTests
+{
+    [Fact]
+    public async Task Scan_finds_powershell_and_sh_profile_definitions()
+    {
+        Assert.SkipWhen(ExecutionTests.Pwsh is null, "pwsh not installed");
+        using var tmp = new TempDir();
+        var paths = tmp.CreatePaths();
+        var profile = paths.ProfilePath(ShellTarget.Pwsh);
+        Directory.CreateDirectory(Path.GetDirectoryName(profile)!);
+        File.WriteAllText(profile, "Set-Alias -Name g -Value git\nfunction open { explorer . }\nfunction mkcd($Name) { New-Item -ItemType Directory $Name; Set-Location $Name }\nfunction prompt { \"PS $(Get-Location)> \" }\n");
+        Directory.CreateDirectory(paths.Home);
+        File.WriteAllText(Path.Combine(paths.Home, ".bashrc"), "alias ll='ls -la'\n");
+        using var worker = new PowerShellWorker();
+
+        var found = await new ProfileImporter(paths).ScanAsync(worker, TestContext.Current.CancellationToken);
+
+        Assert.Equal(["g", "ll", "mkcd", "open"], found.Select(c => c.Name).Order());
+    }
+}
+
+/// <summary>Opens a real terminal window – only runs when QC_LAUNCH_TEST=1 is set.</summary>
+public class TrialLaunchTests
+{
+    [Fact]
+    public async Task Launch_opens_a_terminal_that_runs_the_trial()
+    {
+        Assert.SkipUnless(Environment.GetEnvironmentVariable("QC_LAUNCH_TEST") == "1", "set QC_LAUNCH_TEST=1 to open a real terminal");
+        Assert.SkipUnless(OperatingSystem.IsWindows(), "Windows only");
+        using var tmp = new TempDir();
+        var paths = new QcPaths(Path.Combine(tmp.Path, "home with space"), Path.Combine(tmp.Path, "docs"), Path.Combine(tmp.Path, "config"));
+        Directory.CreateDirectory(paths.Home);
+        var marker = Path.Combine(tmp.Path, "marker.txt");
+        var command = new QuickCommand
+        {
+            Name = "mark", Language = ShellLanguage.Cmd, Script = $"echo %who%> \"{marker}\"\r\nexit",
+            Parameters = [new() { Name = "who", Required = true }],
+        };
+
+        var runner = new TrialRunner(paths);
+        runner.Launch(runner.Prepare(command, "launched", TerminalTexts.English));
+
+        for (var i = 0; i < 100 && !File.Exists(marker); i++)
+            await Task.Delay(100, TestContext.Current.CancellationToken);
+        Assert.True(File.Exists(marker), "the terminal did not run the trial");
+        await Task.Delay(300, TestContext.Current.CancellationToken);
+        Assert.Equal("launched", File.ReadAllText(marker).Trim());
+    }
+}

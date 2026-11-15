@@ -44,6 +44,7 @@ public sealed partial class ShellSetupViewModel : ObservableObject
         IsFirstRun = isFirstRun;
         DataDirectory = services.DataDirectory;
         SelectedUiLanguage = UiLanguageOption.All.FirstOrDefault(o => o.Code == services.Settings.UiLanguage) ?? UiLanguageOption.All[0];
+        AutoReload = services.Settings.AutoReload;
         Step = 1;
 
         foreach (var target in ShellDetector.SupportedTargets)
@@ -67,6 +68,9 @@ public sealed partial class ShellSetupViewModel : ObservableObject
 
     [ObservableProperty]
     public partial UiLanguageOption SelectedUiLanguage { get; set; }
+
+    [ObservableProperty]
+    public partial bool AutoReload { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsStep1), nameof(IsStep2), nameof(IsStep3), nameof(StepText), nameof(NextLabel), nameof(CanGoBack), nameof(PlannedChanges))]
@@ -160,9 +164,11 @@ public sealed partial class ShellSetupViewModel : ObservableObject
         }
 
         // 2. Generated files first, so the profile lines point to something that exists.
+        settings.UiLanguage = SelectedUiLanguage.Code;
+        settings.AutoReload = AutoReload;
         try
         {
-            _services.Output.WriteAll(_services.Repository.Load().Commands);
+            _services.WriteOutput(_services.Repository.Load().Commands);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
         {

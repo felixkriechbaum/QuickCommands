@@ -101,6 +101,10 @@ public sealed class CommandParameter
     [JsonIgnore]
     public string EffectiveDefault => Kind == ParameterKind.Switch || Required ? "" : Default;
 
+    public bool ContentEquals(CommandParameter other) =>
+        Name == other.Name && Kind == other.Kind && Required == other.Required && Default == other.Default &&
+        Description == other.Description && Choices.SequenceEqual(other.Choices, StringComparer.Ordinal);
+
     public CommandParameter Clone() => new()
     {
         Name = Name,

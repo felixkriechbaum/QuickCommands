@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QuickCommands.App.ViewModels"
+        xmlns:r="using:QuickCommands.App.Resources"
+        x:Class="QuickCommands.App.Views.ImportWindow"
+        x:DataType="vm:ImportViewModel"
+        Title="{x:Static r:Strings.Import_Title}"
+        Icon="/Assets/icon.ico"
+        Width="920" Height="600" MinWidth="720" MinHeight="440"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <DockPanel Margin="24,20">
+    <TextBlock DockPanel.Dock="Top" Classes="heading" Text="{x:Static r:Strings.Import_Title}" />
+    <TextBlock DockPanel.Dock="Top" Classes="muted" TextWrapping="Wrap" Text="{x:Static r:Strings.Import_Hint}" Margin="0,4,0,10" />
+    <Border DockPanel.Dock="Top" Classes="conflict" IsVisible="{Binding Notice, Converter={x:Static ObjectConverters.IsNotNull}}">
+      <TextBlock Text="{Binding Notice}" TextWrapping="Wrap" />
+    </Border>
+
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto,8,Auto" Margin="0,16,0,0">
+      <StackPanel>
+        <CheckBox Content="{x:Static r:Strings.Import_CommentOut}" IsChecked="{Binding CommentOut}" />
+        <TextBlock Classes="muted" FontSize="12" TextWrapping="Wrap" Margin="28,0,0,0" Text="{x:Static r:Strings.Import_CommentOutHint}" />
+      </StackPanel>
+      <Button Grid.Column="1" VerticalAlignment="Bottom" Content="{x:Static r:Strings.Action_Cancel}" Click="OnCancel" IsCancel="True" />
+      <Button Grid.Column="3" VerticalAlignment="Bottom" Classes="accent" Content="{Binding ImportLabel}" Click="OnImport"
+              IsEnabled="{Binding CanImport}" />
+    </Grid>
+
+    <Panel>
+      <StackPanel IsVisible="{Binding IsScanning}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+        <ProgressBar IsIndeterminate="True" Width="220" />
+        <TextBlock Classes="muted" Text="{x:Static r:Strings.Import_Scanning}" HorizontalAlignment="Center" />
+      </StackPanel>
+      <TextBlock IsVisible="{Binding HasNone}" Classes="muted" Text="{x:Static r:Strings.Import_None}"
+                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+
+      <Grid ColumnDefinitions="360,20,*" IsVisible="{Binding !IsScanning}">
+        <ListBox Classes="commands" ItemsSource="{Binding Candidates}" SelectedItem="{Binding Selected}" Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:ImportCandidateViewModel">
+              <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+                <CheckBox Grid.RowSpan="2" IsChecked="{Binding IsChecked}" IsEnabled="{Binding IsEnabled}" MinWidth="0" Margin="0,0,6,0" />
+                <TextBlock Grid.Column="1" Text="{Binding Name}" FontFamily="{StaticResource QcMonoFont}" FontWeight="SemiBold" />
+                <Border Grid.Column="2" Classes="badge" Classes.ps="{Binding IsPowerShell}" Classes.sh="{Binding IsSh}">
+                  <TextBlock Text="{Binding Badge}" />
+                </Border>
+                <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Classes="muted" FontSize="12" Margin="0,3,0,0"
+                           Text="{Binding Details}" TextTrimming="CharacterEllipsis" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ScrollViewer Grid.Column="2" IsVisible="{Binding Selected, Converter={x:Static ObjectConverters.IsNotNull}}">
+          <StackPanel Spacing="8">
+            <TextBlock Classes="section" Margin="0" Text="{Binding Selected.Name}" FontFamily="{StaticResource QcMonoFont}" />
+            <TextBlock Classes="muted" FontSize="12" Text="{Binding Selected.Candidate.SourceFile}" TextWrapping="Wrap" />
+            <Border Classes="code">
+              <SelectableTextBlock Text="{Binding Selected.Candidate.Script}" TextWrapping="Wrap" />
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Panel>
+  </DockPanel>
+</Window>

@@ -10,17 +10,28 @@ namespace QuickCommands.App.ViewModels;
 public interface IDialogService
 {
     Task<bool> ConfirmAsync(string title, string message, string confirmText);
+    Task ShowMessageAsync(string title, string message);
     Task<bool> RunSetupAsync();
 
     /// <returns>True if the data folder changed and the commands must be reloaded.</returns>
     Task<bool> ShowSettingsAsync();
+
+    Task<QuickCommand?> PickTemplateAsync();
+
+    /// <returns>True if something was imported or restored and the commands must be reloaded.</returns>
+    Task<bool> ShowImportAsync(IReadOnlyList<QuickCommand> existing);
+
+    Task<bool> ShowHistoryAsync(IReadOnlyList<QuickCommand> current);
 }
 
 public sealed partial class MainViewModel : ObservableObject
 {
+    private static readonly TimeSpan SyntaxDelay = TimeSpan.FromMilliseconds(450);
+
     private readonly AppServices _services;
     private CommandCollection _collection = new();
     private CommandInventory? _inventory;
+    private readonly Dictionary<CommandItemViewModel, CancellationTokenSource> _syntaxChecks = [];
 
     public MainViewModel(AppServices services)
     {
@@ -71,19 +82,20 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             // Keep generated files in sync, e.g. after commands.json was changed on another computer.
-            _services.Output.WriteAll(_collection.Commands);
+            _services.WriteOutput(_collection.Commands);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
             SetStatus(string.Format(Strings.Status_Error, e.Message), isError: true);
         }
         await LoadInventoryAsync();
+        await CheckAllSyntaxAsync();
     }
 
     public void Load()
     {
         foreach (var item in Items)
-            item.IdentityChanged -= OnIdentityChanged;
+            Detach(item);
         Items.Clear();
 
         try
@@ -124,15 +136,43 @@ public sealed partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void New()
+    private void New() => Open(CommandItemViewModel.CreateNew(SelectedFilter.Value ?? DefaultLanguage()));
+
+    [RelayCommand]
+    private async Task FromTemplateAsync()
     {
-        var language = SelectedFilter.Value ?? DefaultLanguage();
-        var item = CommandItemViewModel.CreateNew(language);
+        if (Dialogs is null || await Dialogs.PickTemplateAsync() is not { } template)
+            return;
+        Open(CommandItemViewModel.CreateFrom(template));
+    }
+
+    [RelayCommand]
+    private void Duplicate()
+    {
+        if (Selected is not { } item)
+            return;
+        var name = CommandNameRules.Normalize(item.Name);
+        var copyName = name.Length == 0 ? "" : UniqueName(name + "-copy", item.Language.Value);
+        Open(CommandItemViewModel.CreateFrom(item.ToDraft(copyName)));
+    }
+
+    private string UniqueName(string name, ShellLanguage language)
+    {
+        var taken = Items.Where(i => i.Language.Value == language).Select(i => CommandNameRules.Normalize(i.Name)).ToHashSet();
+        var candidate = name;
+        for (var n = 2; taken.Contains(candidate); n++)
+            candidate = name + n;
+        return candidate;
+    }
+
+    private void Open(CommandItemViewModel item)
+    {
         AddItem(item);
         SearchText = "";
         RefreshFilter();
         Selected = item;
         RecheckAll();
+        _ = CheckSyntaxAsync(item, TimeSpan.Zero);
     }
 
     [RelayCommand]
@@ -161,7 +201,7 @@ public sealed partial class MainViewModel : ObservableObject
         try
         {
             _services.Repository.Save(_collection);
-            _services.Output.WriteAll(_collection.Commands);
+            _services.WriteOutput(_collection.Commands);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {
@@ -183,8 +223,10 @@ public sealed partial class MainViewModel : ObservableObject
         else if (model.Language == ShellLanguage.Cmd)
             message = Strings.Status_Saved_Cmd;
         else
-            message = Strings.Status_Saved_Shell;
-        SetStatus(message, isError: false);
+            message = _services.Settings.AutoReload ? Strings.Status_Saved_AutoReload : Strings.Status_Saved_Shell;
+        if (item.HasSyntaxErrors)
+            message = string.Format(Strings.Status_Saved_SyntaxWarning, item.SyntaxErrors[0].Line);
+        SetStatus(message, isError: item.HasSyntaxErrors);
     }
 
     [RelayCommand]
@@ -206,7 +248,7 @@ public sealed partial class MainViewModel : ObservableObject
             try
             {
                 _services.Repository.Save(_collection);
-                _services.Output.WriteAll(_collection.Commands);
+                _services.WriteOutput(_collection.Commands);
             }
             catch (Exception e) when (e is IOException or UnauthorizedAccessException)
             {
@@ -217,13 +259,40 @@ public sealed partial class MainViewModel : ObservableObject
         }
 
         var position = FilteredItems.IndexOf(item);
-        item.IdentityChanged -= OnIdentityChanged;
+        Detach(item);
         Items.Remove(item);
         RefreshFilter();
         Selected = FilteredItems.Count == 0 ? null : FilteredItems[Math.Clamp(position, 0, FilteredItems.Count - 1)];
         RecheckAll();
         if (removed)
             SetStatus(string.Format(Strings.Status_Deleted, item.DisplayName), isError: false);
+    }
+
+    /// <summary>"Try it": the current draft, unsaved, in a new terminal.</summary>
+    [RelayCommand]
+    private void Try()
+    {
+        var item = Selected;
+        if (item is null)
+            return;
+        if (!item.CanTry)
+        {
+            SetStatus(Strings.Try_InvalidName, isError: true);
+            return;
+        }
+        try
+        {
+            var settings = _services.Settings;
+            var trial = _services.Trials.Prepare(item.ToModel(), item.TryArguments, _services.GeneratorOptions.Texts,
+                preferZsh: settings.EnabledShells.Contains(ShellTarget.Zsh),
+                preferWindowsPowerShell: settings.EnabledShells.Contains(ShellTarget.WindowsPowerShell) && !settings.EnabledShells.Contains(ShellTarget.Pwsh));
+            _services.Trials.Launch(trial);
+            SetStatus(string.Format(Strings.Status_Tried, (item.DisplayName + " " + item.TryArguments).Trim()), isError: false);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or PlatformNotSupportedException)
+        {
+            SetStatus(string.Format(Strings.Status_TryFailed, e.Message), isError: true);
+        }
     }
 
     [RelayCommand]
@@ -234,6 +303,74 @@ public sealed partial class MainViewModel : ObservableObject
         if (await Dialogs.ShowSettingsAsync())
             Load();
         RecheckAll();
+    }
+
+    [RelayCommand]
+    private async Task ImportAsync()
+    {
+        if (Dialogs is null)
+            return;
+        if (_inventory is null)
+            await LoadInventoryAsync();
+        if (await Dialogs.ShowImportAsync(_collection.Commands))
+            await ReloadKeepingDraftsAsync();
+    }
+
+    [RelayCommand]
+    private async Task HistoryAsync()
+    {
+        if (Dialogs is null)
+            return;
+        if (HasUnsavedChanges &&
+            !await Dialogs.ConfirmAsync(Strings.Confirm_Discard_Title, Strings.Confirm_Discard_Message, Strings.Confirm_Discard_Action))
+            return;
+        if (await Dialogs.ShowHistoryAsync(_collection.Commands))
+        {
+            Load();
+            await CheckAllSyntaxAsync();
+            SetStatus(Strings.Status_Restored, isError: false);
+        }
+    }
+
+    /// <summary>After an import: reload saved commands, but keep unsaved new drafts.</summary>
+    private async Task ReloadKeepingDraftsAsync()
+    {
+        var drafts = Items.Where(i => i.IsNew).ToList();
+        var before = _collection.Commands.Count;
+        Load();
+        foreach (var draft in drafts)
+            AddItem(draft);
+        RefreshFilter();
+        RecheckAll();
+        SetStatus(string.Format(Strings.Status_Imported, _collection.Commands.Count - before), isError: false);
+        await CheckAllSyntaxAsync();
+    }
+
+    /// <summary>Checks every command once in the background, so syntax errors show up in the list.</summary>
+    private async Task CheckAllSyntaxAsync()
+    {
+        foreach (var item in Items.ToList())
+            await CheckSyntaxAsync(item, TimeSpan.Zero);
+    }
+
+    private async Task CheckSyntaxAsync(CommandItemViewModel item, TimeSpan delay)
+    {
+        if (_syntaxChecks.TryGetValue(item, out var running))
+            running.Cancel();
+        var cts = _syntaxChecks[item] = new CancellationTokenSource();
+        try
+        {
+            if (delay > TimeSpan.Zero)
+                await Task.Delay(delay, cts.Token);
+            var language = item.Language.Value;
+            var script = item.Script;
+            var result = await _services.Syntax.CheckAsync(language, script, cts.Token);
+            if (item.Language.Value == language && item.Script == script)
+                item.SyntaxErrors = result?.Errors ?? [];
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 
     partial void OnSearchTextChanged(string value) => RefreshFilter();
@@ -249,10 +386,25 @@ public sealed partial class MainViewModel : ObservableObject
     private void AddItem(CommandItemViewModel item)
     {
         item.IdentityChanged += OnIdentityChanged;
+        item.ScriptChanged += OnScriptChanged;
         Items.Add(item);
     }
 
+    private void Detach(CommandItemViewModel item)
+    {
+        item.IdentityChanged -= OnIdentityChanged;
+        item.ScriptChanged -= OnScriptChanged;
+        if (_syntaxChecks.Remove(item, out var running))
+            running.Cancel();
+    }
+
     private void OnIdentityChanged(object? sender, EventArgs e) => RecheckAll();
+
+    private void OnScriptChanged(object? sender, EventArgs e)
+    {
+        if (sender is CommandItemViewModel item)
+            _ = CheckSyntaxAsync(item, SyntaxDelay);
+    }
 
     private ShellLanguage DefaultLanguage()
     {
@@ -276,6 +428,7 @@ public sealed partial class MainViewModel : ObservableObject
                         || i.Description.Contains(search, StringComparison.OrdinalIgnoreCase))
             .OrderBy(i => i.IsNew ? 0 : 1)
             .ThenBy(i => i.DisplayName, StringComparer.OrdinalIgnoreCase)
+            .ThenBy(i => i.Language.Value)
             .ToList();
 
         var selected = Selected;
@@ -312,7 +465,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
     }
 
-    private static string Describe(Conflict conflict, string name)
+    internal static string Describe(Conflict conflict, string name)
     {
         var format = conflict.Kind switch
         {

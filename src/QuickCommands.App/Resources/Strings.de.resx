@@ -96,4 +96,82 @@ rem &quot;exit /b&quot; statt &quot;exit&quot; verwenden - sonst schliesst sich 
   <data name="Error_Apply" xml:space="preserve"><value>Einige Änderungen sind fehlgeschlagen:
 {0}</value></data>
   <data name="Error_Title" xml:space="preserve"><value>Etwas ist schiefgelaufen</value></data>
+  <data name="Status_Saved_AutoReload" xml:space="preserve"><value>Gespeichert. Offene Terminals übernehmen es automatisch.</value></data>
+  <data name="Status_Saved_SyntaxWarning" xml:space="preserve"><value>Gespeichert – aber Zeile {0} hat einen Syntaxfehler.</value></data>
+  <data name="Status_Tried" xml:space="preserve"><value>Terminal mit „{0}“ geöffnet.</value></data>
+  <data name="Status_TryFailed" xml:space="preserve"><value>Terminal konnte nicht geöffnet werden: {0}</value></data>
+  <data name="Status_Restored" xml:space="preserve"><value>Wiederhergestellt.</value></data>
+  <data name="Status_Imported" xml:space="preserve"><value>{0} Commands importiert.</value></data>
+  <data name="Main_More" xml:space="preserve"><value>Mehr</value></data>
+  <data name="Main_FromTemplate" xml:space="preserve"><value>Vorlage…</value></data>
+  <data name="Main_Import" xml:space="preserve"><value>Aus Profil importieren…</value></data>
+  <data name="Main_History" xml:space="preserve"><value>Verlauf…</value></data>
+  <data name="Action_Duplicate" xml:space="preserve"><value>Duplizieren</value></data>
+  <data name="Action_Try" xml:space="preserve"><value>▶ Ausprobieren</value></data>
+  <data name="Action_Close" xml:space="preserve"><value>Schließen</value></data>
+  <data name="Field_TryArgs" xml:space="preserve"><value>Argumente zum Ausprobieren</value></data>
+  <data name="Field_Parameters" xml:space="preserve"><value>Parameter</value></data>
+  <data name="Try_InvalidName" xml:space="preserve"><value>Gib dem Command zuerst einen gültigen Namen.</value></data>
+  <data name="Try_Hint" xml:space="preserve"><value>Führt den aktuellen Editor-Stand in einem neuen Terminal aus – gespeichert wird nichts.</value></data>
+  <data name="Param_Add" xml:space="preserve"><value>+ Parameter</value></data>
+  <data name="Param_None" xml:space="preserve"><value>Keine Parameter – das Script liest seine Argumente selbst ({0}).</value></data>
+  <data name="Param_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Param_Kind" xml:space="preserve"><value>Typ</value></data>
+  <data name="Param_Required" xml:space="preserve"><value>Pflicht</value></data>
+  <data name="Param_Default" xml:space="preserve"><value>Standard</value></data>
+  <data name="Param_Choices" xml:space="preserve"><value>Werte, z. B. dev|prod</value></data>
+  <data name="Param_Description" xml:space="preserve"><value>Beschreibung</value></data>
+  <data name="Param_Remove" xml:space="preserve"><value>Parameter entfernen</value></data>
+  <data name="Param_Usage" xml:space="preserve"><value>Aufruf: {0}</value></data>
+  <data name="Param_Variables" xml:space="preserve"><value>Im Script: {0}   übrige Argumente: {1}</value></data>
+  <data name="Kind_Text" xml:space="preserve"><value>Text</value></data>
+  <data name="Kind_Switch" xml:space="preserve"><value>Schalter</value></data>
+  <data name="Kind_Choice" xml:space="preserve"><value>Auswahl</value></data>
+  <data name="ParamIssue_EmptyName" xml:space="preserve"><value>Parameter {0}: Bitte gib einen Namen ein.</value></data>
+  <data name="ParamIssue_InvalidName" xml:space="preserve"><value>Parameter „{1}“: nur a–z, 0–9 und _, beginnend mit einem Buchstaben (max. 32 Zeichen).</value></data>
+  <data name="ParamIssue_DuplicateName" xml:space="preserve"><value>Parameter „{1}“ gibt es doppelt.</value></data>
+  <data name="ParamIssue_ReservedName" xml:space="preserve"><value>Parameter „{1}“: -h und --help sind für die Hilfe reserviert.</value></data>
+  <data name="ParamIssue_ShellVariable" xml:space="preserve"><value>Parameter „{1}“ würde eine Variable der Shell ersetzen – bitte wähle einen anderen Namen.</value></data>
+  <data name="ParamIssue_NoChoices" xml:space="preserve"><value>Parameter „{1}“: Gib die erlaubten Werte ein, z. B. dev|prod.</value></data>
+  <data name="ParamIssue_InvalidChoice" xml:space="preserve"><value>Wert „{1}“: erlaubt sind nur Buchstaben, Ziffern und . _ + -</value></data>
+  <data name="ParamIssue_DefaultNotInChoices" xml:space="preserve"><value>Standard „{1}“ ist keiner der erlaubten Werte.</value></data>
+  <data name="ParamIssue_InvalidDefault" xml:space="preserve"><value>Parameter „{1}“: Der Standardwert darf kein &quot; und keine Zeilenumbrüche enthalten.</value></data>
+  <data name="ParamIssue_ScriptHasParamBlock" xml:space="preserve"><value>Das Script hat einen eigenen param()-Block. Nutze entweder ihn oder die Parameter oben.</value></data>
+  <data name="Syntax_Error" xml:space="preserve"><value>Zeile {0}: {1}</value></data>
+  <data name="Syntax_More" xml:space="preserve"><value>(+{0} weitere)</value></data>
+  <data name="Templates_Title" xml:space="preserve"><value>Vorlagen</value></data>
+  <data name="Templates_Use" xml:space="preserve"><value>Vorlage verwenden</value></data>
+  <data name="Templates_Hint" xml:space="preserve"><value>Öffnet sich als neuer, ungespeicherter Command – anpassen und speichern.</value></data>
+  <data name="Import_Title" xml:space="preserve"><value>Aus Profil importieren</value></data>
+  <data name="Import_Hint" xml:space="preserve"><value>Funktionen und Aliase aus deinen Shell-Profilen. Importierte werden zu normalen Quickcommands.</value></data>
+  <data name="Import_Scanning" xml:space="preserve"><value>Durchsuche deine Shell-Profile…</value></data>
+  <data name="Import_None" xml:space="preserve"><value>In deinen Profilen wurden keine Funktionen oder Aliase gefunden.</value></data>
+  <data name="Import_NoPowerShell" xml:space="preserve"><value>PowerShell-Profile können nur gelesen werden, wenn PowerShell installiert ist.</value></data>
+  <data name="Import_CommentOut" xml:space="preserve"><value>Originale im Profil auskommentieren (eine Sicherung wird angelegt)</value></data>
+  <data name="Import_CommentOutHint" xml:space="preserve"><value>Sonst gewinnt weiter die Version im Profil, weil sie nach QuickCommands geladen wird.</value></data>
+  <data name="Import_Action" xml:space="preserve"><value>Importieren ({0})</value></data>
+  <data name="Import_Alias" xml:space="preserve"><value>Alias</value></data>
+  <data name="Import_Function" xml:space="preserve"><value>Funktion</value></data>
+  <data name="Import_Exists" xml:space="preserve"><value>gibt es schon</value></data>
+  <data name="Import_Invalid" xml:space="preserve"><value>Name nicht erlaubt</value></data>
+  <data name="Import_Inline" xml:space="preserve"><value>„{0}“ steht mit anderem Code in einer Zeile und wurde nicht auskommentiert.</value></data>
+  <data name="Import_Backups" xml:space="preserve"><value>Sicherungen: {0}</value></data>
+  <data name="History_Title" xml:space="preserve"><value>Verlauf</value></data>
+  <data name="History_Hint" xml:space="preserve"><value>Bei jedem Speichern wird ein Stand gesichert (die letzten 50). Wähle einen, um einzelne Commands oder den ganzen Stand wiederherzustellen.</value></data>
+  <data name="History_Empty" xml:space="preserve"><value>Noch kein Verlauf – er beginnt mit dem nächsten Speichern.</value></data>
+  <data name="History_Count" xml:space="preserve"><value>{0} Commands</value></data>
+  <data name="History_State_Deleted" xml:space="preserve"><value>seitdem gelöscht</value></data>
+  <data name="History_State_Changed" xml:space="preserve"><value>seitdem geändert</value></data>
+  <data name="History_State_Same" xml:space="preserve"><value>unverändert</value></data>
+  <data name="History_State_New" xml:space="preserve"><value>erst später angelegt</value></data>
+  <data name="History_RestoreCommand" xml:space="preserve"><value>Command wiederherstellen</value></data>
+  <data name="History_RestoreAll" xml:space="preserve"><value>Diesen Stand wiederherstellen</value></data>
+  <data name="History_ConfirmTitle" xml:space="preserve"><value>Stand wiederherstellen?</value></data>
+  <data name="History_ConfirmAll" xml:space="preserve"><value>Alle Commands werden durch den Stand vom {0} ersetzt. Der aktuelle Stand bleibt im Verlauf.</value></data>
+  <data name="History_NameTaken" xml:space="preserve"><value>„{0}“ gibt es in dieser Shell schon als anderen Command – benenne oder lösche ihn zuerst.</value></data>
+  <data name="Confirm_Discard_Title" xml:space="preserve"><value>Ungespeicherte Änderungen</value></data>
+  <data name="Confirm_Discard_Message" xml:space="preserve"><value>Ungespeicherte Änderungen gehen verloren. Fortfahren?</value></data>
+  <data name="Confirm_Discard_Action" xml:space="preserve"><value>Verwerfen</value></data>
+  <data name="Settings_AutoReload" xml:space="preserve"><value>Offene Terminals automatisch aktualisieren</value></data>
+  <data name="Settings_AutoReloadHint" xml:space="preserve"><value>PowerShell, bash und zsh übernehmen gespeicherte Änderungen ohne „qc reload“.</value></data>
 </root>

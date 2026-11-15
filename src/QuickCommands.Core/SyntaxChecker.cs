@@ -182,11 +182,13 @@ public sealed class PowerShellWorker : IDisposable
                     return null;
                 try
                 {
+                    // The caller's token is deliberately not used for the exchange itself: an answer left unread
+                    // in the pipe would be taken as the answer to the next request.
                     await process.StandardInput.WriteLineAsync(op + ":" + Convert.ToBase64String(Encoding.UTF8.GetBytes(script)));
-                    await process.StandardInput.FlushAsync(ct);
-                    using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                    timeout.CancelAfter(TimeSpan.FromSeconds(20));
+                    await process.StandardInput.FlushAsync(CancellationToken.None);
+                    using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(20));
                     var line = await process.StandardOutput.ReadLineAsync(timeout.Token);
+                    ct.ThrowIfCancellationRequested();
                     if (line is not null)
                         return JsonDocument.Parse(line);
                 }

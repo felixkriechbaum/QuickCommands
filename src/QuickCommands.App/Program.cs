@@ -6,13 +6,19 @@ namespace QuickCommands.App;
 
 internal static class Program
 {
+    /// <summary>Used by the uninstaller: removes the profile lines and the PATH entry, without any UI.</summary>
+    public const string RemoveIntegrationArgument = "--remove-integration";
+
     [STAThread]
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
-        var services = AppServices.Create();
+        using var services = AppServices.Create();
+        if (args.Contains(RemoveIntegrationArgument, StringComparer.OrdinalIgnoreCase))
+            return RemoveIntegration(services);
+
         ApplyUiLanguage(services.Settings.UiLanguage);
         App.Services = services;
-        BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 
     // Also used by the Avalonia designer.
@@ -20,6 +26,24 @@ internal static class Program
         AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .LogToTrace();
+
+    private static int RemoveIntegration(AppServices services)
+    {
+        var failed = 0;
+        foreach (var target in ShellDetector.SupportedTargets)
+        {
+            try
+            {
+                if (services.Integration.IsInstalled(target))
+                    services.Integration.Uninstall(target);
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or System.Security.SecurityException)
+            {
+                failed++;
+            }
+        }
+        return failed == 0 ? 0 : 1;
+    }
 
     private static void ApplyUiLanguage(string? language)
     {

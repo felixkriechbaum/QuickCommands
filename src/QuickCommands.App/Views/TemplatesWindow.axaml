@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QuickCommands.App.ViewModels"
+        xmlns:r="using:QuickCommands.App.Resources"
+        x:Class="QuickCommands.App.Views.TemplatesWindow"
+        x:DataType="vm:TemplatesViewModel"
+        Title="{x:Static r:Strings.Templates_Title}"
+        Icon="/Assets/icon.ico"
+        Width="900" Height="580" MinWidth="700" MinHeight="420"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+  <DockPanel Margin="24,20">
+    <TextBlock DockPanel.Dock="Top" Classes="heading" Text="{x:Static r:Strings.Templates_Title}" />
+    <TextBlock DockPanel.Dock="Top" Classes="muted" Text="{x:Static r:Strings.Templates_Hint}" Margin="0,4,0,14" />
+
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,16,0,0">
+      <Button Content="{x:Static r:Strings.Action_Cancel}" Click="OnCancel" IsCancel="True" />
+      <Button Classes="accent" Content="{x:Static r:Strings.Templates_Use}" Click="OnUse" IsDefault="True"
+              IsEnabled="{Binding HasSelection}" />
+    </StackPanel>
+
+    <Grid ColumnDefinitions="300,20,*">
+      <DockPanel>
+        <TextBox DockPanel.Dock="Top" PlaceholderText="{x:Static r:Strings.Main_Search}" Text="{Binding SearchText}" Margin="0,0,0,8" />
+        <ListBox Classes="commands" ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" DoubleTapped="OnDoubleTapped"
+                 Background="Transparent">
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:TemplateItemViewModel">
+              <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                <TextBlock Text="{Binding Name}" FontFamily="{StaticResource QcMonoFont}" FontWeight="SemiBold" />
+                <Border Grid.Column="1" Classes="badge" Classes.ps="{Binding IsPowerShell}" Classes.sh="{Binding IsSh}">
+                  <TextBlock Text="{Binding Badge}" />
+                </Border>
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Classes="muted" FontSize="12" Margin="0,3,0,0"
+                           Text="{Binding Description}" TextTrimming="CharacterEllipsis" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+
+      <ScrollViewer Grid.Column="2" IsVisible="{Binding HasSelection}">
+        <StackPanel Spacing="10">
+          <TextBlock Classes="section" Text="{Binding Selected.Name}" FontFamily="{StaticResource QcMonoFont}" Margin="0" />
+          <TextBlock Text="{Binding Selected.Description}" TextWrapping="Wrap" />
+          <Border Classes="code">
+            <SelectableTextBlock Text="{Binding Selected.Help}" TextWrapping="NoWrap" />
+          </Border>
+          <Border Classes="code">
+            <SelectableTextBlock Text="{Binding Selected.Script}" TextWrapping="Wrap" />
+          </Border>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </DockPanel>
+</Window>

@@ -29,6 +29,29 @@ public sealed class LanguageOption
     public override string ToString() => Label;
 }
 
+public sealed class KindOption
+{
+    private KindOption(ParameterKind value, string label)
+    {
+        Value = value;
+        Label = label;
+    }
+
+    public ParameterKind Value { get; }
+    public string Label { get; }
+
+    public static IReadOnlyList<KindOption> All { get; } =
+    [
+        new(ParameterKind.Text, Strings.Kind_Text),
+        new(ParameterKind.Switch, Strings.Kind_Switch),
+        new(ParameterKind.Choice, Strings.Kind_Choice),
+    ];
+
+    public static KindOption For(ParameterKind kind) => All.First(o => o.Value == kind);
+
+    public override string ToString() => Label;
+}
+
 public sealed class FilterOption
 {
     private FilterOption(ShellLanguage? value, string label)
