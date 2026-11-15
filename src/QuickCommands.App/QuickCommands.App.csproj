@@ -10,7 +10,8 @@
     <SatelliteResourceLanguages>de;en</SatelliteResourceLanguages>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+  <!-- Only when publishing for a platform (dotnet publish -r …); a plain Release build stays referenceable. -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' and '$(RuntimeIdentifier)' != ''">
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>

@@ -359,7 +359,8 @@ public static class ShGenerator
         if (options.AutoReload)
         {
             sb.AppendLine("if [ -n \"${ZSH_VERSION:-}\" ]; then");
-            sb.AppendLine("  eval 'if (( ${precmd_functions[(Ie)__qc_autoreload]} == 0 )); then precmd_functions+=(__qc_autoreload); fi'");
+            // ":-0": precmd_functions does not exist yet in a plain zsh without plugins.
+            sb.AppendLine("  eval 'if (( ${precmd_functions[(Ie)__qc_autoreload]:-0} == 0 )); then precmd_functions+=(__qc_autoreload); fi'");
             sb.AppendLine("elif [ -n \"${BASH_VERSION:-}\" ]; then");
             sb.AppendLine("  case \"${PROMPT_COMMAND:-}\" in");
             sb.AppendLine("    *__qc_autoreload*) ;;");
