@@ -25,8 +25,8 @@ einem Mac und hängt die fertige Datei an den Release.
 
 Die App ist nur ad-hoc signiert. macOS blockiert deshalb den ersten Start; einmal unter Systemeinstellungen →
 Datenschutz & Sicherheit „Dennoch öffnen“ klicken. Der Cask entfernt die Quarantäne absichtlich nicht selbst.
+Wer das komplett vermeiden will, braucht ein Apple-Developer-Konto (99 $/Jahr) für Signatur und Notarisierung.
 
 Vor dem Deinstallieren die Integration in den Einstellungen entfernen („Integration komplett entfernen“). Ein
 `uninstall`-Block im Cask würde das zwar automatisch machen, liefe aber auch bei jedem `brew upgrade` und würde die
 Commands nach jedem Update abschalten.
-Wer das komplett vermeiden will, braucht ein Apple-Developer-Konto (99 $/Jahr) für Signatur und Notarisierung.
