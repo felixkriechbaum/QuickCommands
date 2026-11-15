@@ -66,7 +66,7 @@ public class GeneratorTests
     [Fact]
     public void Listing_puts_descriptions_on_one_line()
     {
-        var lines = CommandListing.Lines([Make.Command("dev", ShellLanguage.Cmd, "", "line one\nline two")], "T", showLanguage: true);
+        var lines = CommandListing.Lines([Make.Command("dev", ShellLanguage.Cmd, "", "line one\nline two")], "T", showLanguage: true, TerminalTexts.English);
         Assert.Contains(lines, l => l.Contains("dev") && l.Contains("cmd") && l.EndsWith("line one line two"));
     }
 }

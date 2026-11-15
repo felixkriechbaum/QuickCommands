@@ -134,7 +134,7 @@ internal static class ProcessRunner
 {
     public static async Task<ProcessResult> RunAsync(
         string fileName, IEnumerable<string> arguments, TimeSpan timeout, CancellationToken ct = default,
-        IReadOnlyDictionary<string, string>? environment = null, string? workingDirectory = null)
+        IReadOnlyDictionary<string, string>? environment = null, string? workingDirectory = null, string? stdin = null)
     {
         var psi = new ProcessStartInfo(fileName)
         {
@@ -145,6 +145,7 @@ internal static class ProcessRunner
             CreateNoWindow = true,
             StandardOutputEncoding = Encoding.UTF8,
             StandardErrorEncoding = Encoding.UTF8,
+            StandardInputEncoding = new UTF8Encoding(false),
         };
         if (workingDirectory is not null)
             psi.WorkingDirectory = workingDirectory;
@@ -155,6 +156,8 @@ internal static class ProcessRunner
                 psi.Environment[key] = value;
 
         using var process = Process.Start(psi) ?? throw new Win32Exception($"Could not start {fileName}");
+        if (stdin is not null)
+            await process.StandardInput.WriteAsync(stdin);
         process.StandardInput.Close();
         var stdout = process.StandardOutput.ReadToEndAsync(ct);
         var stderr = process.StandardError.ReadToEndAsync(ct);

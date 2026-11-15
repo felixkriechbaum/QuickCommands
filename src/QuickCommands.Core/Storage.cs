@@ -60,10 +60,39 @@ public sealed class CommandRepository(string dataDirectory)
         return collection;
     }
 
+    public HistoryStore History => new(DataDirectory);
+
+    /// <summary>Writes commands.json and records a history snapshot (the state before the first recorded save, too).</summary>
     public void Save(CommandCollection collection)
     {
+        var history = History;
+        string? previous = null;
+        var previousTime = DateTime.MinValue;
+        try
+        {
+            if (File.Exists(FilePath) && history.List().Count == 0)
+            {
+                previous = File.ReadAllText(FilePath);
+                previousTime = File.GetLastWriteTimeUtc(FilePath);
+            }
+        }
+        catch (IOException)
+        {
+        }
+
         var json = JsonSerializer.Serialize(collection, Json.Options);
         FileUtil.WriteAtomic(FilePath, json, FileUtil.Utf8NoBom);
+
+        try
+        {
+            if (previous is not null)
+                history.Record(previous, previousTime < DateTime.UtcNow ? previousTime : DateTime.UtcNow.AddSeconds(-1));
+            history.Record(json);
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
+        {
+            // The history is a safety net – a failing snapshot must not fail the save itself.
+        }
     }
 }
 

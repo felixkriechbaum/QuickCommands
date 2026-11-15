@@ -8,13 +8,11 @@ public static class ShellDetector
 
     public static bool IsAvailable(ShellTarget target) => target switch
     {
-        ShellTarget.Pwsh => FindOnPath("pwsh") is not null
-                            || (OperatingSystem.IsWindows() && File.Exists(Path.Combine(ProgramFiles, "PowerShell", "7", "pwsh.exe"))),
-        ShellTarget.WindowsPowerShell => OperatingSystem.IsWindows()
-                                         && File.Exists(Path.Combine(Environment.SystemDirectory, "WindowsPowerShell", "v1.0", "powershell.exe")),
+        ShellTarget.Pwsh => FindExecutable("pwsh") is not null,
+        ShellTarget.WindowsPowerShell => OperatingSystem.IsWindows() && FindExecutable("powershell") is not null,
         ShellTarget.Cmd => OperatingSystem.IsWindows(),
-        ShellTarget.Bash => OperatingSystem.IsWindows() ? FindGitBash() is not null : FindOnPath("bash") is not null,
-        ShellTarget.Zsh => !OperatingSystem.IsWindows() && FindOnPath("zsh") is not null,
+        ShellTarget.Bash => OperatingSystem.IsWindows() ? FindGitBash() is not null : FindExecutable("bash") is not null,
+        ShellTarget.Zsh => !OperatingSystem.IsWindows() && FindExecutable("zsh") is not null,
         _ => false,
     };
 
@@ -38,21 +36,44 @@ public static class ShellDetector
         return candidates.FirstOrDefault(File.Exists);
     }
 
-    private static string ProgramFiles =>
-        Environment.GetEnvironmentVariable("ProgramW6432") ?? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-
-    private static string? FindOnPath(string name)
+    /// <summary>
+    /// Looks in PATH and in the usual install folders. Apps started from the macOS Finder get a minimal PATH
+    /// without Homebrew, so those folders are searched explicitly.
+    /// </summary>
+    public static string? FindExecutable(string name)
     {
-        var names = OperatingSystem.IsWindows() ? new[] { name + ".exe" } : [name];
-        foreach (var dir in PathEnvironment.Split(Environment.GetEnvironmentVariable("PATH") ?? ""))
+        var file = OperatingSystem.IsWindows() && !name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ? name + ".exe" : name;
+        foreach (var dir in SearchDirectories())
         {
-            foreach (var n in names)
-            {
-                var candidate = Path.Combine(dir, n);
-                if (File.Exists(candidate))
-                    return candidate;
-            }
+            var candidate = Path.Combine(dir, file);
+            if (File.Exists(candidate))
+                return candidate;
         }
         return null;
     }
+
+    private static IEnumerable<string> SearchDirectories()
+    {
+        foreach (var dir in PathEnvironment.Split(Environment.GetEnvironmentVariable("PATH") ?? ""))
+            yield return dir;
+        if (OperatingSystem.IsWindows())
+        {
+            yield return Path.Combine(ProgramFiles, "PowerShell", "7");
+            yield return Path.Combine(Environment.SystemDirectory, "WindowsPowerShell", "v1.0");
+            yield return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WindowsApps");
+        }
+        else
+        {
+            yield return "/opt/homebrew/bin";
+            yield return "/usr/local/bin";
+            yield return "/usr/bin";
+            yield return "/bin";
+            yield return "/snap/bin";
+            yield return "/usr/local/microsoft/powershell/7";
+            yield return "/opt/microsoft/powershell/7";
+        }
+    }
+
+    private static string ProgramFiles =>
+        Environment.GetEnvironmentVariable("ProgramW6432") ?? Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 }

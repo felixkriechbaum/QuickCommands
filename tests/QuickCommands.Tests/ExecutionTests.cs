@@ -11,9 +11,9 @@ public class ExecutionTests
     private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(60);
     private const string GitBash = @"C:\Program Files\Git\bin\bash.exe";
 
-    private static string? Pwsh => FindOnPath(OperatingSystem.IsWindows() ? "pwsh.exe" : "pwsh");
+    internal static string? Pwsh => FindOnPath(OperatingSystem.IsWindows() ? "pwsh.exe" : "pwsh");
 
-    private static string? Bash => OperatingSystem.IsWindows()
+    internal static string? Bash => OperatingSystem.IsWindows()
         ? (File.Exists(GitBash) ? GitBash : null)
         : FindOnPath("bash");
 
@@ -23,7 +23,7 @@ public class ExecutionTests
             .Select(d => Path.Combine(d.Trim(), exe))
             .FirstOrDefault(File.Exists);
 
-    private static async Task<string> RunPwsh(QcPaths paths, string script)
+    internal static async Task<string> RunPwsh(QcPaths paths, string script)
     {
         var run = await ProcessRunner.RunAsync(Pwsh!,
             ["-NoProfile", "-NonInteractive", "-Command", $". {PowerShellGenerator.Quote(paths.PowerShellScript)}; {script}"],
@@ -31,13 +31,13 @@ public class ExecutionTests
         return (run.StdOut + run.StdErr).ReplaceLineEndings("\n");
     }
 
-    private static async Task<string> RunCmd(params string[] args)
+    internal static async Task<string> RunCmd(params string[] args)
     {
         var run = await ProcessRunner.RunAsync("cmd.exe", ["/d", "/c", .. args], Timeout, TestContext.Current.CancellationToken);
         return (run.StdOut + run.StdErr).ReplaceLineEndings("\n");
     }
 
-    private static async Task<string> RunBash(QcPaths paths, string script)
+    internal static async Task<string> RunBash(QcPaths paths, string script)
     {
         var env = new Dictionary<string, string> { ["HOME"] = PathUtil.ToShPath(paths.Home) };
         var run = await ProcessRunner.RunAsync(Bash!,

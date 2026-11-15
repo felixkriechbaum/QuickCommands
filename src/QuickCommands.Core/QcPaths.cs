@@ -17,6 +17,13 @@ public sealed class QcPaths(string homeDirectory, string documentsDirectory, str
     public string PowerShellScript => Path.Combine(OutputDirectory, "qc.ps1");
     public string ShScript => Path.Combine(OutputDirectory, "qc.sh");
 
+    /// <summary>Hash of the current qc.ps1 / qc.sh – open sessions compare it to reload automatically.</summary>
+    public string PowerShellStamp => PowerShellScript + ".stamp";
+    public string ShStamp => ShScript + ".stamp";
+
+    /// <summary>Scratch folder for "Try it" runs.</summary>
+    public string TryDirectory => Path.Combine(OutputDirectory, "try");
+
     public string DefaultDataDirectory => OutputDirectory;
     public string SettingsFile => Path.Combine(configDirectory, "settings.json");
 
@@ -35,15 +42,17 @@ public sealed class QcPaths(string homeDirectory, string documentsDirectory, str
     };
 
     /// <summary>How sh code refers to qc.sh: via $HOME when possible, so the line works in Git Bash and on Unix alike.</summary>
-    public string ShScriptReference
+    public string ShScriptReference => ShReference(ShScript);
+
+    public string ShStampReference => ShReference(ShStamp);
+
+    /// <summary>A double-quoted sh word for a file under the home directory ("$HOME/…"), or its absolute sh path.</summary>
+    public string ShReference(string file)
     {
-        get
-        {
-            var relative = Path.GetRelativePath(Home, ShScript);
-            return relative.StartsWith("..", StringComparison.Ordinal) || Path.IsPathRooted(relative)
-                ? "\"" + PathUtil.ToShPath(ShScript) + "\""
-                : "\"$HOME/" + relative.Replace('\\', '/') + "\"";
-        }
+        var relative = Path.GetRelativePath(Home, file);
+        return relative.StartsWith("..", StringComparison.Ordinal) || Path.IsPathRooted(relative)
+            ? "\"" + PathUtil.ToShPath(file) + "\""
+            : "\"$HOME/" + relative.Replace('\\', '/') + "\"";
     }
 }
 

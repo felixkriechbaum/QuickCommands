@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace QuickCommands.Core;
 
 /// <summary>The script language a command is written in. Each command belongs to exactly one.</summary>
@@ -53,7 +55,61 @@ public sealed class QuickCommand
     /// <summary>The user explicitly accepted that this command shadows an existing one.</summary>
     public bool AllowOverride { get; set; }
 
-    public QuickCommand Clone() => (QuickCommand)MemberwiseClone();
+    /// <summary>Declared parameters. Empty = the script parses $args / %* / "$@" itself (v0.1 behaviour).</summary>
+    public List<CommandParameter> Parameters { get; set; } = [];
+
+    [JsonIgnore]
+    public bool HasParameters => Parameters.Count > 0;
+
+    public QuickCommand Clone()
+    {
+        var copy = (QuickCommand)MemberwiseClone();
+        copy.Parameters = Parameters.Select(p => p.Clone()).ToList();
+        return copy;
+    }
+}
+
+public enum ParameterKind
+{
+    /// <summary>Any value; positional or --name value.</summary>
+    Text,
+
+    /// <summary>Flag without value (--force).</summary>
+    Switch,
+
+    /// <summary>One of a fixed list of values.</summary>
+    Choice,
+}
+
+public sealed class CommandParameter
+{
+    public string Name { get; set; } = "";
+    public ParameterKind Kind { get; set; }
+    public bool Required { get; set; }
+
+    /// <summary>Default value for Text/Choice. Ignored for required parameters and switches.</summary>
+    public string Default { get; set; } = "";
+
+    public List<string> Choices { get; set; } = [];
+    public string Description { get; set; } = "";
+
+    /// <summary>Text and choice parameters can be given by position (in declaration order); switches only by flag.</summary>
+    [JsonIgnore]
+    public bool IsPositional => Kind != ParameterKind.Switch;
+
+    /// <summary>The default that actually applies (none for switches and required parameters).</summary>
+    [JsonIgnore]
+    public string EffectiveDefault => Kind == ParameterKind.Switch || Required ? "" : Default;
+
+    public CommandParameter Clone() => new()
+    {
+        Name = Name,
+        Kind = Kind,
+        Required = Required,
+        Default = Default,
+        Choices = [.. Choices],
+        Description = Description,
+    };
 }
 
 public sealed class CommandCollection
@@ -71,6 +127,9 @@ public sealed class AppSettings
 
     public List<ShellTarget> EnabledShells { get; set; } = [];
 
-    /// <summary>UI language: null = system language, otherwise "de" or "en".</summary>
+    /// <summary>UI language: null = system language, otherwise "de" or "en". Also used for the terminal output.</summary>
     public string? UiLanguage { get; set; }
+
+    /// <summary>Open PowerShell/bash/zsh sessions pick up saved changes without "qc reload".</summary>
+    public bool AutoReload { get; set; } = true;
 }
