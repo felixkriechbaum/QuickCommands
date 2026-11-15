@@ -15,23 +15,19 @@ cask "quickcommands" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "QuickCommands.app"
 
-  # Removes the QuickCommands line from .zshrc/.bashrc/PowerShell profile. Your commands are kept.
-  uninstall_preflight do
-    system_command "#{appdir}/QuickCommands.app/Contents/MacOS/QuickCommands",
-                   args:         ["--remove-integration"],
-                   must_succeed: false
-  end
-
   zap trash: "~/.config/QuickCommands"
 
+  # Removing the profile line is not done in an uninstall stanza on purpose: those also run on
+  # `brew upgrade`, which would switch the commands off after every update.
   caveats <<~EOS
     QuickCommands is not notarized by Apple, so macOS blocks the first launch.
     Open System Settings → Privacy & Security and click "Open Anyway" once.
 
-    Your commands are stored in ~/.quickcommands and are kept on uninstall.
+    Before uninstalling, remove the shell integration in QuickCommands
+    (Settings → Remove integration completely). Your commands in ~/.quickcommands are kept.
   EOS
 end
