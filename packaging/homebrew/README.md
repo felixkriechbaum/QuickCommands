@@ -1,32 +1,32 @@
 # Homebrew
 
-QuickCommands kommt über einen eigenen Tap, nicht über das offizielle `homebrew/cask`: Dort werden seit dem
-1. September 2026 nur noch Apps aufgenommen, die Apples Gatekeeper-Prüfung bestehen (signiert mit einem bezahlten
-Apple-Developer-Konto und notarisiert). Eigene Taps dürfen auch nicht notarisierte Apps anbieten.
+QuickCommands is distributed through its own tap, not the official `homebrew/cask`. Since September 1, 2026 the
+official repo only accepts apps that pass Apple's Gatekeeper check (signed with a paid Apple Developer account and
+notarized). Third-party taps can still ship apps that aren't notarized.
 
-Installieren (für Nutzer):
+To install:
 
 ```sh
 brew install --cask felixkriechbaum/tap/quickcommands
 ```
 
-`quickcommands.rb` ist eine Vorlage. Der Release-Workflow füllt Version und SHA256 ein, testet die Installation auf
-einem Mac und hängt die fertige Datei an den Release.
+`quickcommands.rb` is a template. The release workflow fills in the version and SHA256, tests the install on a Mac
+and attaches the finished file to the release.
 
-## Einmalig einrichten
+## One-time setup
 
-1. Öffentliches Repo **`felixkriechbaum/homebrew-tap`** anlegen (der Name muss mit `homebrew-` beginnen).
-2. Nach dem Veröffentlichen eines Releases dessen `quickcommands.rb` nach `Casks/quickcommands.rb` im Tap legen.
-3. Optional automatisch: Fine-grained Token mit „Contents: Read and write“ nur für `homebrew-tap` anlegen und im
-   QuickCommands-Repo als Secret **`HOMEBREW_TAP_TOKEN`** speichern. Danach aktualisiert `.github/workflows/homebrew.yml`
-   den Tap bei jedem veröffentlichten Release.
+1. Create a public repo **`felixkriechbaum/homebrew-tap`** (the name has to start with `homebrew-`).
+2. After publishing a release, copy its `quickcommands.rb` to `Casks/quickcommands.rb` in the tap.
+3. Optional, to automate step 2: create a fine-grained token with "Contents: Read and write" for `homebrew-tap`
+   only and save it as the secret **`HOMEBREW_TAP_TOKEN`** in the QuickCommands repo. From then on
+   `.github/workflows/homebrew.yml` updates the tap for every published release.
 
 ## Gatekeeper
 
-Die App ist nur ad-hoc signiert. macOS blockiert deshalb den ersten Start; einmal unter Systemeinstellungen →
-Datenschutz & Sicherheit „Dennoch öffnen“ klicken. Der Cask entfernt die Quarantäne absichtlich nicht selbst.
-Wer das komplett vermeiden will, braucht ein Apple-Developer-Konto (99 $/Jahr) für Signatur und Notarisierung.
+The app only has an ad-hoc signature, so macOS blocks the first launch. Go to System Settings → Privacy & Security
+once and click "Open Anyway". The cask deliberately doesn't strip the quarantine flag itself. Getting rid of this
+step entirely needs an Apple Developer account ($99/year) for signing and notarization.
 
-Vor dem Deinstallieren die Integration in den Einstellungen entfernen („Integration komplett entfernen“). Ein
-`uninstall`-Block im Cask würde das zwar automatisch machen, liefe aber auch bei jedem `brew upgrade` und würde die
-Commands nach jedem Update abschalten.
+Before uninstalling, remove the shell integration in the app's settings ("Remove integration completely"). An
+`uninstall` block in the cask could do that automatically, but it would also run on every `brew upgrade` and switch
+your commands off after each update.

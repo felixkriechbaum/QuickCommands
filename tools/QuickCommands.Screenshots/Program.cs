@@ -12,7 +12,7 @@ using QuickCommands.Core;
 
 // Usage: dotnet run --project tools/QuickCommands.Screenshots -- [outputDir] [de|en]
 var outputDir = Path.GetFullPath(args.Length > 0 ? args[0] : Path.Combine("docs", "screenshots"));
-var language = args.Length > 1 ? args[1] : "de";
+var language = args.Length > 1 ? args[1] : "en";
 var culture = CultureInfo.GetCultureInfo(language);
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 CultureInfo.CurrentUICulture = culture;
@@ -25,7 +25,7 @@ var temp = Path.Combine(Path.GetTempPath(), "qc-screenshots", Guid.NewGuid().ToS
 var paths = new QcPaths(Path.Combine(temp, "home"), Path.Combine(temp, "docs"), Path.Combine(temp, "config"));
 var settings = new AppSettings { SetupCompleted = true, EnabledShells = [ShellTarget.Pwsh, ShellTarget.Cmd], UiLanguage = language };
 using var services = AppServices.Create(paths, new ReadOnlyPathEnvironment(PathEnvironment.CreateDefault()), settings);
-DemoData.Write(services.Repository, paths);
+DemoData.Write(services.Repository, paths, german: language == "de");
 App.Services = services;
 
 AppBuilder.Configure<App>()
@@ -52,7 +52,7 @@ Capture(main, "syntax-dark.png");
 vm.NewCommand.Execute(null);
 vm.Selected!.Language = LanguageOption.For(ShellLanguage.Cmd);
 vm.Selected.Name = "code";
-vm.Selected.Description = "VS Code im aktuellen Ordner";
+vm.Selected.Description = language == "de" ? "VS Code im aktuellen Ordner" : "VS Code in the current folder";
 Capture(main, "conflict-dark.png");
 
 SetTheme(ThemeVariant.Light);
@@ -155,40 +155,41 @@ internal sealed class ReadOnlyPathEnvironment(IPathEnvironment inner) : IPathEnv
 internal static class DemoData
 {
     /// <summary>Saves the demo commands in a few steps (so the history has entries) and writes demo profiles for the import.</summary>
-    public static void Write(CommandRepository repository, QcPaths paths)
+    public static void Write(CommandRepository repository, QcPaths paths, bool german)
     {
+        string T(string de, string en) => german ? de : en;
         var dev = new QuickCommand
         {
-            Name = "dev", Language = ShellLanguage.Cmd, Description = "Zum Development-Ordner wechseln und VS Code öffnen",
+            Name = "dev", Language = ShellLanguage.Cmd, Description = T("Zum Development-Ordner wechseln und VS Code öffnen", "Go to the development folder and open VS Code"),
             Script = "cd /d D:\\Development\\%project%\r\nif \"%code%\"==\"1\" code .",
-            Parameters = [new() { Name = "project", Description = "Unterordner" }, new() { Name = "code", Kind = ParameterKind.Switch, Description = "VS Code öffnen" }],
+            Parameters = [new() { Name = "project", Description = T("Unterordner", "Subfolder") }, new() { Name = "code", Kind = ParameterKind.Switch, Description = T("VS Code öffnen", "Open VS Code") }],
         };
         var mkcd = new QuickCommand
         {
-            Name = "mkcd", Language = ShellLanguage.PowerShell, Description = "Ordner anlegen und direkt hineinwechseln",
-            Script = "# Ordner anlegen (auch verschachtelt) und hineinwechseln\nNew-Item -ItemType Directory -Force -Path $name | Out-Null\nSet-Location -Path $name\nWrite-Host \"Jetzt in $(Get-Location)\" -ForegroundColor Cyan\n",
-            Parameters = [new() { Name = "name", Required = true, Description = "Ordnername" }],
+            Name = "mkcd", Language = ShellLanguage.PowerShell, Description = T("Ordner anlegen und direkt hineinwechseln", "Create a folder and cd into it"),
+            Script = T("# Ordner anlegen (auch verschachtelt) und hineinwechseln\n", "# Create the folder (nested is fine) and cd into it\n") + "New-Item -ItemType Directory -Force -Path $name | Out-Null\nSet-Location -Path $name\nWrite-Host \"" + T("Jetzt in", "Now in") + " $(Get-Location)\" -ForegroundColor Cyan\n",
+            Parameters = [new() { Name = "name", Required = true, Description = T("Ordnername", "Folder name") }],
         };
         var deploy = new QuickCommand
         {
-            Name = "deploy", Language = ShellLanguage.PowerShell, Description = "App bauen und auf einen Server ausrollen",
-            Script = "Write-Host \"Baue $app für $target …\" -ForegroundColor Cyan\ndotnet publish \"src/$app\" -c Release -o \"publish/$app\"\nif ($LASTEXITCODE -ne 0) { return }\n\nif (-not $force) {\n    if ((Read-Host \"Nach $target ausrollen? [j/N]\") -ne 'j') { return }\n}\nscp -r \"publish/$app\" \"deploy@$($target).example.com:/srv/$app\"\n",
+            Name = "deploy", Language = ShellLanguage.PowerShell, Description = T("App bauen und auf einen Server ausrollen", "Build the app and deploy it to a server"),
+            Script = "Write-Host \"" + T("Baue $app für $target …", "Building $app for $target …") + "\" -ForegroundColor Cyan\ndotnet publish \"src/$app\" -c Release -o \"publish/$app\"\nif ($LASTEXITCODE -ne 0) { return }\n\nif (-not $force) {\n    if ((Read-Host \"" + T("Nach $target ausrollen? [j/N]\") -ne 'j'", "Deploy to ${target}? [y/N]\") -ne 'y'") + ") { return }\n}\nscp -r \"publish/$app\" \"deploy@$($target).example.com:/srv/$app\"\n",
             Parameters =
             [
-                new() { Name = "app", Required = true, Description = "Projektname" },
-                new() { Name = "target", Kind = ParameterKind.Choice, Choices = ["dev", "staging", "prod"], Default = "dev", Description = "Zielumgebung" },
-                new() { Name = "force", Kind = ParameterKind.Switch, Description = "Ohne Rückfrage" },
+                new() { Name = "app", Required = true, Description = T("Projektname", "Project name") },
+                new() { Name = "target", Kind = ParameterKind.Choice, Choices = ["dev", "staging", "prod"], Default = "dev", Description = T("Zielumgebung", "Target environment") },
+                new() { Name = "force", Kind = ParameterKind.Switch, Description = T("Ohne Rückfrage", "Don't ask for confirmation") },
             ],
         };
         var backup = new QuickCommand
         {
-            Name = "backup", Language = ShellLanguage.PowerShell, Description = "Projektordner als ZIP sichern",
-            Script = "$stamp = Get-Date -Format 'yyyy-MM-dd'\nCompress-Archive -Path . -DestinationPath \"..\\backup-$stamp.zip\"\nif (Test-Path \"..\\backup-$stamp.zip\" {\n    Write-Host 'Fertig'\n}\n",
+            Name = "backup", Language = ShellLanguage.PowerShell, Description = T("Projektordner als ZIP sichern", "Back up the project folder as a ZIP"),
+            Script = "$stamp = Get-Date -Format 'yyyy-MM-dd'\nCompress-Archive -Path . -DestinationPath \"..\\backup-$stamp.zip\"\nif (Test-Path \"..\\backup-$stamp.zip\" {\n    Write-Host '" + T("Fertig", "Done") + "'\n}\n",
         };
         var collection = new CommandCollection { Commands = [dev, mkcd] };
         repository.Save(collection);
-        collection.Commands.Add(new() { Name = "gs", Language = ShellLanguage.Sh, Description = "Kurzer git status", Script = "git status -sb" });
-        collection.Commands.Add(new() { Name = "myip", Language = ShellLanguage.Cmd, Description = "Lokale IPv4-Adressen anzeigen", Script = "ipconfig | findstr /i \"IPv4\"" });
+        collection.Commands.Add(new() { Name = "gs", Language = ShellLanguage.Sh, Description = T("Kurzer git status", "Short git status"), Script = "git status -sb" });
+        collection.Commands.Add(new() { Name = "myip", Language = ShellLanguage.Cmd, Description = T("Lokale IPv4-Adressen anzeigen", "Show local IPv4 addresses"), Script = "ipconfig | findstr /i \"IPv4\"" });
         repository.Save(collection);
         collection.Commands.Add(deploy);
         collection.Commands.Add(backup);

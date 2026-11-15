@@ -1,21 +1,21 @@
 # winget
 
-Die Dateien hier sind Vorlagen. Der Release-Workflow füllt Version, Download-URL und SHA256 ein und hängt das Ergebnis
-als `winget-manifests-<version>.zip` an den Release.
+The files in here are templates. The release workflow fills in the version, download URL and SHA256 and attaches the
+result to the release as `winget-manifests-<version>.zip`.
 
-## Erste Version einreichen (einmalig, von Hand)
+## Submitting the first version (once, by hand)
 
-1. Release-Entwurf auf GitHub veröffentlichen (der Installer muss öffentlich herunterladbar sein).
-2. `winget-manifests-<version>.zip` entpacken und lokal prüfen:
+1. Publish the draft release on GitHub (the installer has to be publicly downloadable).
+2. Unzip `winget-manifests-<version>.zip` and test it locally:
    ```powershell
    winget validate --manifest manifests\f\FelixKriechbaum\QuickCommands\<version>
    winget install --manifest manifests\f\FelixKriechbaum\QuickCommands\<version>
    ```
-3. Den Ordner `manifests/f/FelixKriechbaum/QuickCommands/<version>` per Pull Request zu
-   [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs) hinzufügen
-   (oder `wingetcreate submit <ordner> --token <token>`).
+3. Add the folder `manifests/f/FelixKriechbaum/QuickCommands/<version>` to
+   [microsoft/winget-pkgs](https://github.com/microsoft/winget-pkgs) with a pull request
+   (or run `wingetcreate submit <folder> --token <token>`).
 
-## Weitere Versionen (automatisch)
+## Later versions (automatic)
 
-Sobald die erste Version in winget ist: Repository-Secret `WINGET_TOKEN` anlegen (klassischer GitHub-Token mit
-`public_repo`). Danach reicht `.github/workflows/winget.yml` jede veröffentlichte Version selbst ein.
+Once the first version is in winget, add a repository secret `WINGET_TOKEN` (a classic GitHub token with
+`public_repo`). From then on `.github/workflows/winget.yml` submits every published version by itself.
