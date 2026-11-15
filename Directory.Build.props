@@ -7,5 +7,7 @@
     <Version>0.2.0</Version>
     <Authors>Felix Kriechbaum</Authors>
     <Product>QuickCommands</Product>
+    <Copyright>Copyright (c) 2026 Felix Kriechbaum</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 </Project>

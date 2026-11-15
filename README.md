@@ -10,7 +10,7 @@ Läuft auf Windows, macOS und Linux.
 
 | System | So geht's |
 |---|---|
-| Windows | `winget install FelixKriechbaum.QuickCommands` oder `QuickCommands-<version>-win-x64-setup.exe` aus den [Releases](../../releases) (ohne Adminrechte) |
+| Windows | `winget install FelixKriechbaum.QuickCommands` (sobald freigegeben) oder `QuickCommands-<version>-win-x64-setup.exe` aus den [Releases](../../releases) (ohne Adminrechte) |
 | macOS | `QuickCommands-<version>-macos-arm64.zip` (Apple Silicon) bzw. `-x64.zip` (Intel) entpacken, App in den Programme-Ordner ziehen. Die App ist nicht notarisiert: beim ersten Start Rechtsklick → Öffnen (oder `xattr -dr com.apple.quarantine /Applications/QuickCommands.app`). |
 | Linux | `QuickCommands-<version>-linux-x64.tar.gz` entpacken, `./install.sh` ausführen. Das legt einen Eintrag im App-Menü und `quickcommands` in `~/.local/bin` an. `./install.sh --uninstall` entfernt beides. |
 
@@ -124,3 +124,7 @@ headless auf Linux und macOS.
 4. Entwurf prüfen und veröffentlichen. Ist das Secret `WINGET_TOKEN` gesetzt, reicht `winget.yml` die neue Version
    automatisch bei winget ein. Die erste Version muss einmal von Hand eingereicht werden, siehe
    [packaging/winget/README.md](packaging/winget/README.md).
+
+## Lizenz
+
+[MIT](LICENSE)
