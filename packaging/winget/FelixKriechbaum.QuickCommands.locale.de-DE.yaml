@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.locale.1.6.0.schema.json
+PackageIdentifier: FelixKriechbaum.QuickCommands
+PackageVersion: __VERSION__
+PackageLocale: de-DE
+Publisher: Felix Kriechbaum
+PackageName: QuickCommands
+License: MIT
+ShortDescription: Eigene Terminal-Befehle für PowerShell, cmd und bash/zsh per Oberfläche verwalten.
+ManifestType: locale
+ManifestVersion: 1.6.0

@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.6.0.schema.json
+PackageIdentifier: FelixKriechbaum.QuickCommands
+PackageVersion: __VERSION__
+PackageLocale: en-US
+Publisher: Felix Kriechbaum
+PublisherUrl: https://github.com/felixkriechbaum
+PublisherSupportUrl: https://github.com/felixkriechbaum/QuickCommands/issues
+PackageName: QuickCommands
+PackageUrl: https://github.com/felixkriechbaum/QuickCommands
+License: MIT
+LicenseUrl: https://github.com/felixkriechbaum/QuickCommands/blob/main/LICENSE
+ShortDescription: Define your own terminal commands for PowerShell, cmd and bash/zsh in a GUI.
+Description: |-
+  QuickCommands turns one word into a task: create a folder and change into it, open your IDE, deploy a project.
+  Commands are edited in a code editor with syntax highlighting, can declare parameters with help and tab completion,
+  and are available in PowerShell, cmd and bash/zsh right after saving.
+Tags:
+- alias
+- bash
+- cmd
+- powershell
+- productivity
+- shell
+- terminal
+- zsh
+ReleaseNotesUrl: https://github.com/felixkriechbaum/QuickCommands/releases/tag/v__VERSION__
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0

@@ -227,3 +227,52 @@ public class ParameterExecutionTests
         Assert.Contains("two", output);
     }
 }
+
+/// <summary>The same sh file in zsh (macOS default shell). Skipped where zsh is not installed (e.g. Windows).</summary>
+public class ZshExecutionTests
+{
+    private static string? Zsh => OperatingSystem.IsWindows() ? null : ShellDetector.FindExecutable("zsh");
+
+    private static async Task<string> RunZsh(QcPaths paths, string script)
+    {
+        var env = new Dictionary<string, string> { ["HOME"] = paths.Home };
+        var run = await ProcessRunner.RunAsync(Zsh!, ["-f", "-c", $". \"$HOME/.quickcommands/qc.sh\"; {script}"],
+            TimeSpan.FromSeconds(60), TestContext.Current.CancellationToken, env);
+        return (run.StdOut + run.StdErr).ReplaceLineEndings("\n");
+    }
+
+    [Fact]
+    public async Task Zsh_runs_commands_with_parameters_and_qc()
+    {
+        Assert.SkipWhen(Zsh is null, "zsh not installed");
+        using var tmp = new TempDir();
+        var paths = tmp.CreatePaths();
+        var target = Directory.CreateDirectory(Path.Combine(tmp.Path, "zsh target")).FullName;
+        new OutputWriter(paths).WriteAll(
+        [
+            new()
+            {
+                Name = "deploy", Language = ShellLanguage.Sh, Description = "Deploy",
+                Script = "echo \"name=$name target=$target force=$force rest=$*\"",
+                Parameters =
+                [
+                    new() { Name = "name", Required = true },
+                    new() { Name = "target", Kind = ParameterKind.Choice, Choices = ["dev", "prod"], Default = "dev" },
+                    new() { Name = "force", Kind = ParameterKind.Switch },
+                ],
+            },
+            Make.Command("go", ShellLanguage.Sh, "cd \"$1\""),
+        ]);
+
+        var output = await RunZsh(paths,
+            $"deploy app prod --force x; deploy; deploy app nope; go {ShGenerator.Quote(target)}; pwd; qc; " +
+            "printf '[%s]\n' \"${precmd_functions[@]}\"");
+
+        Assert.Contains("name=app target=prod force=1 rest=x", output);
+        Assert.Contains("deploy: missing argument <name>", output);
+        Assert.Contains("deploy: <target> must be one of: dev, prod", output);
+        Assert.Contains(target, output);
+        Assert.Contains("QuickCommands (sh)", output);
+        Assert.Contains("[__qc_autoreload]", output);
+    }
+}

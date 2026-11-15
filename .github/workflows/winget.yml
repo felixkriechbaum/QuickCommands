@@ -1,0 +1,28 @@
+name: winget
+
+# When a release is published, submit the new version to microsoft/winget-pkgs.
+# Needs the repository secret WINGET_TOKEN (a classic GitHub token with "public_repo") and a first version
+# that is already in winget (see packaging/winget/README.md). Without the secret this job does nothing.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to submit (e.g. 0.2.0)
+        required: true
+
+jobs:
+  winget:
+    runs-on: windows-latest
+    steps:
+      - name: Submit to winget-pkgs
+        env:
+          WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
+          TAG: ${{ github.event.release.tag_name || format('v{0}', github.event.inputs.version) }}
+        run: |
+          if (-not $env:WINGET_TOKEN) { Write-Host "WINGET_TOKEN is not set - skipping."; exit 0 }
+          $version = $env:TAG.TrimStart('v')
+          $url = "https://github.com/$env:GITHUB_REPOSITORY/releases/download/v$version/QuickCommands-$version-win-x64-setup.exe"
+          Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          .\wingetcreate.exe update FelixKriechbaum.QuickCommands --version $version --urls $url --submit --token $env:WINGET_TOKEN

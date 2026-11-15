@@ -1,0 +1,147 @@
+name: Release
+
+# A tag like v0.2.0 builds all platforms and creates a draft release with the files attached.
+# "Run workflow" (manual) only builds and keeps the files as workflow artifacts – handy to test packaging.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  APP: src/QuickCommands.App
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props)" >> "$GITHUB_OUTPUT"
+          fi
+
+  windows:
+    needs: version
+    runs-on: windows-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Publish
+        run: dotnet publish $env:APP -c Release -r win-x64 -o publish/win-x64 -p:Version=$env:VERSION
+      - name: Installer
+        run: |
+          if (-not (Get-Command iscc -ErrorAction SilentlyContinue) -and -not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) {
+            choco install innosetup -y --no-progress
+          }
+          $iscc = (Get-Command iscc -ErrorAction SilentlyContinue).Source
+          if (-not $iscc) { $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" }
+          & $iscc "/DAppVersion=$env:VERSION" "/DPublishDir=..\..\publish\win-x64" packaging\windows\QuickCommands.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed" }
+      - name: Collect
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item publish/installer/*.exe dist/
+          Copy-Item publish/win-x64/QuickCommands.exe "dist/QuickCommands-$env:VERSION-win-x64-portable.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*
+
+  macos:
+    needs: version
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [arm64, x64]
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Publish
+        run: dotnet publish "$APP" -c Release -r osx-${{ matrix.arch }} -o publish/osx-${{ matrix.arch }} -p:Version=$VERSION
+      - name: App bundle
+        run: |
+          mkdir -p dist
+          bash packaging/macos/make-app.sh publish/osx-${{ matrix.arch }} "$VERSION" ${{ matrix.arch }} dist
+          rm -rf dist/QuickCommands.app
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.arch }}
+          path: dist/*
+
+  linux:
+    needs: version
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Publish
+        run: dotnet publish "$APP" -c Release -r linux-x64 -o publish/linux-x64 -p:Version=$VERSION
+      - name: Package
+        run: |
+          pkg="QuickCommands-$VERSION-linux-x64"
+          mkdir -p "dist/$pkg"
+          cp publish/linux-x64/QuickCommands "dist/$pkg/"
+          cp packaging/linux/install.sh packaging/linux/quickcommands.desktop "dist/$pkg/"
+          cp packaging/icon-256.png "dist/$pkg/quickcommands.png"
+          chmod +x "dist/$pkg/QuickCommands" "dist/$pkg/install.sh"
+          tar -C dist -czf "dist/$pkg.tar.gz" "$pkg"
+          rm -rf "dist/$pkg"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/*
+
+  release:
+    needs: [version, windows, macos, linux]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: winget manifests
+        run: |
+          setup="QuickCommands-$VERSION-win-x64-setup.exe"
+          sha=$(sha256sum "dist/$setup" | cut -d' ' -f1 | tr 'a-f' 'A-F')
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/v$VERSION/$setup"
+          dir="manifests/f/FelixKriechbaum/QuickCommands/$VERSION"
+          mkdir -p "winget/$dir"
+          for f in packaging/winget/*.yaml; do
+            sed -e "s|__VERSION__|$VERSION|g" -e "s|__URL__|$url|g" -e "s|__SHA256__|$sha|g" "$f" > "winget/$dir/$(basename "$f")"
+          done
+          (cd winget && zip -r "../dist/winget-manifests-$VERSION.zip" manifests)
+          (cd dist && sha256sum * > SHA256SUMS.txt)
+          ls -la dist
+      - uses: actions/upload-artifact@v4
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        with:
+          name: release-files
+          path: dist/*
+      - name: Draft release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "v$VERSION" dist/* --draft --title "QuickCommands $VERSION" --generate-notes

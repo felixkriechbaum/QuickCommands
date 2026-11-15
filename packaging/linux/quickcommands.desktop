@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=QuickCommands
+GenericName=Terminal command manager
+Comment=Define your own terminal commands for bash, zsh and PowerShell
+Comment[de]=Eigene Terminal-Befehle für bash, zsh und PowerShell verwalten
+Exec=@EXEC@
+Icon=quickcommands
+Terminal=false
+Categories=Development;Utility;
+Keywords=shell;terminal;alias;function;bash;zsh;powershell;
+StartupWMClass=QuickCommands
