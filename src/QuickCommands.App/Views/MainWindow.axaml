@@ -1,0 +1,174 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QuickCommands.App.ViewModels"
+        xmlns:r="using:QuickCommands.App.Resources"
+        xmlns:ae="using:AvaloniaEdit"
+        x:Class="QuickCommands.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="QuickCommands"
+        Icon="/Assets/icon.ico"
+        Width="1120" Height="720" MinWidth="780" MinHeight="480"
+        WindowStartupLocation="CenterScreen">
+
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
+    <KeyBinding Gesture="Ctrl+N" Command="{Binding NewCommand}" />
+  </Window.KeyBindings>
+
+  <Window.Styles>
+    <Style Selector="Border.badge">
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="6,1" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Background" Value="#5B6270" />
+    </Style>
+    <Style Selector="Border.badge.ps">
+      <Setter Property="Background" Value="#2F5DA8" />
+    </Style>
+    <Style Selector="Border.badge.sh">
+      <Setter Property="Background" Value="#2E7D4F" />
+    </Style>
+    <Style Selector="Border.badge > TextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
+    </Style>
+    <Style Selector="Border.conflict">
+      <Setter Property="Background" Value="{DynamicResource QcWarningBackground}" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+    <Style Selector="Border.conflict > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource QcWarningText}" />
+    </Style>
+    <Style Selector="Border.conflict.error">
+      <Setter Property="Background" Value="{DynamicResource QcErrorBackground}" />
+    </Style>
+    <Style Selector="Border.conflict.error > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
+    </Style>
+    <Style Selector="TextBlock.status">
+      <Setter Property="Foreground" Value="{DynamicResource QcSuccessText}" />
+    </Style>
+    <Style Selector="TextBlock.status.error">
+      <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
+    </Style>
+    <Style Selector="ListBox.commands ListBoxItem">
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Margin" Value="0,1" />
+    </Style>
+  </Window.Styles>
+
+  <Grid ColumnDefinitions="320,1,*">
+
+    <!-- Sidebar: search, filter, list -->
+    <Border Background="{DynamicResource QcSidebarBrush}">
+      <DockPanel Margin="16,16,16,16">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Image Source="/Assets/icon.ico" Width="24" Height="24" />
+            <TextBlock Text="QuickCommands" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center" />
+          </StackPanel>
+          <Button Grid.Column="1" Content="{x:Static r:Strings.Main_Settings}" Command="{Binding OpenSettingsCommand}" />
+        </Grid>
+
+        <TextBox DockPanel.Dock="Top" PlaceholderText="{x:Static r:Strings.Main_Search}" Text="{Binding SearchText}" />
+        <ComboBox DockPanel.Dock="Top" Margin="0,8,0,0" HorizontalAlignment="Stretch"
+                  ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding SelectedFilter}" />
+
+        <Button DockPanel.Dock="Bottom" Classes="accent" Margin="0,12,0,0"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                Content="{x:Static r:Strings.Main_New}" Command="{Binding NewCommand}" ToolTip.Tip="Ctrl+N" />
+
+        <Panel Margin="0,10,0,0">
+          <TextBlock Classes="muted" Text="{x:Static r:Strings.Main_NoCommands}" IsVisible="{Binding HasNoVisibleItems}"
+                     HorizontalAlignment="Center" Margin="0,24,0,0" />
+          <ListBox Classes="commands" ItemsSource="{Binding FilteredItems}" SelectedItem="{Binding Selected}" Background="Transparent">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:CommandItemViewModel">
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="{Binding DisplayName}" FontFamily="{StaticResource QcMonoFont}" FontWeight="SemiBold" />
+                    <TextBlock Text="●" Foreground="#E8A33D" FontSize="11" VerticalAlignment="Center"
+                               IsVisible="{Binding IsDirty}" ToolTip.Tip="{x:Static r:Strings.Main_Unsaved}" />
+                  </StackPanel>
+                  <Border Grid.Column="1" Classes="badge" Classes.ps="{Binding IsPowerShell}" Classes.sh="{Binding IsSh}">
+                    <TextBlock Text="{Binding LanguageBadge}" />
+                  </Border>
+                  <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Classes="muted" FontSize="12" Margin="0,3,0,0"
+                             Text="{Binding Description}" IsVisible="{Binding HasDescription}" TextTrimming="CharacterEllipsis" />
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Panel>
+      </DockPanel>
+    </Border>
+
+    <Rectangle Grid.Column="1" Fill="{DynamicResource QcBorderBrush}" />
+
+    <!-- Detail -->
+    <Panel Grid.Column="2">
+      <StackPanel IsVisible="{Binding !HasSelection}" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
+        <TextBlock Text="{x:Static r:Strings.Main_Empty_Title}" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
+        <TextBlock Classes="muted" Text="{x:Static r:Strings.Main_Empty_Hint}" HorizontalAlignment="Center" />
+      </StackPanel>
+
+      <Grid IsVisible="{Binding HasSelection}" Margin="24,18,24,16" RowDefinitions="Auto,Auto,Auto,*,Auto">
+        <Grid ColumnDefinitions="*,16,220">
+          <StackPanel>
+            <TextBlock Classes="label" Text="{x:Static r:Strings.Field_Name}" />
+            <TextBox x:Name="NameBox" Text="{Binding Selected.Name}" FontFamily="{StaticResource QcMonoFont}"
+                     PlaceholderText="{x:Static r:Strings.Field_NameHint}" />
+          </StackPanel>
+          <StackPanel Grid.Column="2">
+            <TextBlock Classes="label" Text="{x:Static r:Strings.Field_Shell}" />
+            <ComboBox HorizontalAlignment="Stretch" ItemsSource="{Binding LanguageOptions}" SelectedItem="{Binding Selected.Language}" />
+          </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="0,14,0,0">
+          <TextBlock Classes="label" Text="{x:Static r:Strings.Field_Description}" />
+          <TextBox Text="{Binding Selected.Description}" PlaceholderText="{x:Static r:Strings.Field_DescriptionHint}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,14,0,0">
+          <TextBlock Classes="muted" FontSize="12" Text="{x:Static r:Strings.Conflict_Checking}"
+                     IsVisible="{Binding IsCheckingConflicts}" Margin="0,0,0,6" />
+          <ItemsControl ItemsSource="{Binding Selected.Conflicts}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ConflictViewModel">
+                <Border Classes="conflict" Classes.error="{Binding IsError}">
+                  <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <CheckBox Content="{x:Static r:Strings.Field_AllowOverride}" IsChecked="{Binding Selected.AllowOverride}"
+                    IsVisible="{Binding Selected.ShowOverride}" />
+        </StackPanel>
+
+        <DockPanel Grid.Row="3" Margin="0,8,0,0">
+          <TextBlock DockPanel.Dock="Top" Classes="label" Text="{x:Static r:Strings.Field_Script}" />
+          <Border BorderBrush="{DynamicResource QcBorderBrush}" BorderThickness="1" CornerRadius="6"
+                  Background="{DynamicResource QcEditorBackground}" ClipToBounds="True">
+            <ae:TextEditor x:Name="Editor" ShowLineNumbers="True" FontFamily="{StaticResource QcMonoFont}" FontSize="14"
+                           Padding="6,6,0,0" Background="Transparent"
+                           HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+          </Border>
+        </DockPanel>
+
+        <Grid Grid.Row="4" ColumnDefinitions="Auto,*,Auto" Margin="0,14,0,0">
+          <Button Classes="danger" Content="{x:Static r:Strings.Action_Delete}" Command="{Binding DeleteCommand}" />
+          <TextBlock Grid.Column="1" Classes="status" Classes.error="{Binding StatusIsError}" Text="{Binding StatusMessage}"
+                     VerticalAlignment="Center" Margin="14,0" TextTrimming="CharacterEllipsis" />
+          <Button Grid.Column="2" Classes="accent" MinWidth="110" HorizontalContentAlignment="Center"
+                  Content="{x:Static r:Strings.Action_Save}" Command="{Binding SaveCommand}"
+                  IsEnabled="{Binding Selected.CanSave}" ToolTip.Tip="Ctrl+S" />
+        </Grid>
+      </Grid>
+    </Panel>
+  </Grid>
+</Window>

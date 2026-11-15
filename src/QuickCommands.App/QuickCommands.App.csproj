@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>QuickCommands.App</RootNamespace>
+    <AssemblyName>QuickCommands</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <SatelliteResourceLanguages>de;en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <!-- Native packages (SkiaSharp, HarfBuzz) ship their own .pdb files – not needed next to the exe. -->
+  <Target Name="RemovePdbsAfterPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <_PublishedPdbs Include="$(PublishDir)*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(_PublishedPdbs)" />
+  </Target>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.AvaloniaEdit" />
+    <PackageReference Include="AvaloniaEdit.TextMate" />
+    <PackageReference Include="TextMateSharp.Grammars" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuickCommands.Core\QuickCommands.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Strongly typed resource class generated at build time (no Visual Studio designer needed). -->
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <StronglyTypedFileName>$(IntermediateOutputPath)Strings.Designer.cs</StronglyTypedFileName>
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>QuickCommands.App.Resources</StronglyTypedNamespace>
+      <StronglyTypedClassName>Strings</StronglyTypedClassName>
+      <PublicClass>true</PublicClass>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

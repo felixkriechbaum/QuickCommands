@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Main_Search" xml:space="preserve"><value>Search…</value></data>
+  <data name="Main_FilterAll" xml:space="preserve"><value>All shells</value></data>
+  <data name="Main_New" xml:space="preserve"><value>+ New command</value></data>
+  <data name="Main_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Main_Empty_Title" xml:space="preserve"><value>No command selected</value></data>
+  <data name="Main_Empty_Hint" xml:space="preserve"><value>Pick a command on the left or create a new one (Ctrl+N).</value></data>
+  <data name="Main_NoCommands" xml:space="preserve"><value>No commands found.</value></data>
+  <data name="Main_Unsaved" xml:space="preserve"><value>Unsaved changes</value></data>
+  <data name="Field_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Field_NameHint" xml:space="preserve"><value>e.g. dev</value></data>
+  <data name="Field_Shell" xml:space="preserve"><value>Shell</value></data>
+  <data name="Field_Description" xml:space="preserve"><value>Description (optional)</value></data>
+  <data name="Field_DescriptionHint" xml:space="preserve"><value>What does the command do? Shown by &quot;qc&quot;.</value></data>
+  <data name="Field_Script" xml:space="preserve"><value>Script</value></data>
+  <data name="Field_AllowOverride" xml:space="preserve"><value>Override deliberately</value></data>
+  <data name="Action_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Action_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Action_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Action_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Action_Next" xml:space="preserve"><value>Next</value></data>
+  <data name="Action_Install" xml:space="preserve"><value>Install</value></data>
+  <data name="Action_Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Action_Browse" xml:space="preserve"><value>Browse…</value></data>
+  <data name="Action_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Unnamed" xml:space="preserve"><value>(unnamed)</value></data>
+  <data name="Lang_PowerShell" xml:space="preserve"><value>PowerShell</value></data>
+  <data name="Lang_Cmd" xml:space="preserve"><value>cmd</value></data>
+  <data name="Lang_Sh" xml:space="preserve"><value>sh (bash / zsh)</value></data>
+  <data name="Conflict_Checking" xml:space="preserve"><value>Checking existing commands on this computer…</value></data>
+  <data name="Conflict_EmptyName" xml:space="preserve"><value>Please enter a name.</value></data>
+  <data name="Conflict_InvalidName" xml:space="preserve"><value>Only a–z, 0–9, - and _ are allowed, starting with a letter or digit (max. 64 characters).</value></data>
+  <data name="Conflict_ReservedName" xml:space="preserve"><value>&quot;qc&quot; is reserved for the QuickCommands helper.</value></data>
+  <data name="Conflict_Duplicate" xml:space="preserve"><value>There already is a command with this name in this shell.</value></data>
+  <data name="Conflict_CmdBuiltin" xml:space="preserve"><value>&quot;{0}&quot; is an internal cmd command and cannot be overridden – cmd always runs its own.</value></data>
+  <data name="Conflict_ShadowedBySystemPath" xml:space="preserve"><value>A program in the system PATH would always win in cmd: {1}</value></data>
+  <data name="Conflict_ExistingExecutable" xml:space="preserve"><value>A program with this name already exists: {1}. Your command would take precedence.</value></data>
+  <data name="Conflict_ShellKeyword" xml:space="preserve"><value>&quot;{0}&quot; is a keyword of the language and cannot be used.</value></data>
+  <data name="Conflict_CriticalCommand" xml:space="preserve"><value>&quot;{0}&quot; is used by QuickCommands itself and cannot be overridden.</value></data>
+  <data name="Conflict_ShellBuiltin" xml:space="preserve"><value>&quot;{0}&quot; is a built-in shell command. Your command would take precedence.</value></data>
+  <data name="Conflict_ExistingPowerShellCommand" xml:space="preserve"><value>PowerShell already has &quot;{0}&quot; ({1}). Your command would take precedence.</value></data>
+  <data name="Status_Saved_Cmd" xml:space="preserve"><value>Saved. Available in cmd right away.</value></data>
+  <data name="Status_Saved_Shell" xml:space="preserve"><value>Saved. Available in a new terminal or after &quot;qc reload&quot;.</value></data>
+  <data name="Status_Saved_NotInstalled" xml:space="preserve"><value>Saved. Note: no {0} shell is set up yet – see Settings.</value></data>
+  <data name="Status_Deleted" xml:space="preserve"><value>&quot;{0}&quot; deleted.</value></data>
+  <data name="Status_Error" xml:space="preserve"><value>Error: {0}</value></data>
+  <data name="Confirm_Delete_Title" xml:space="preserve"><value>Delete command?</value></data>
+  <data name="Confirm_Delete_Message" xml:space="preserve"><value>&quot;{0}&quot; will be deleted and removed from all generated scripts.</value></data>
+  <data name="Confirm_Close_Title" xml:space="preserve"><value>Unsaved changes</value></data>
+  <data name="Confirm_Close_Message" xml:space="preserve"><value>Some commands have unsaved changes. Close anyway and discard them?</value></data>
+  <data name="Confirm_Close_Action" xml:space="preserve"><value>Discard and close</value></data>
+  <data name="Template_PowerShell" xml:space="preserve"><value># Arguments: $args (e.g. $args[0])
+</value></data>
+  <data name="Template_Cmd" xml:space="preserve"><value>rem Arguments: %* = all, %1 = first
+rem Use &quot;exit /b&quot; instead of &quot;exit&quot; - otherwise the terminal closes.
+</value></data>
+  <data name="Template_Sh" xml:space="preserve"><value># Arguments: &quot;$@&quot; = all, $1 = first
+</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>Set up QuickCommands</value></data>
+  <data name="Setup_Step" xml:space="preserve"><value>Step {0} of 3</value></data>
+  <data name="Setup_Shells_Title" xml:space="preserve"><value>Which shells do you use?</value></data>
+  <data name="Setup_Shells_Hint" xml:space="preserve"><value>Your commands become available in these shells. You can change this any time in the settings.</value></data>
+  <data name="Setup_Data_Title" xml:space="preserve"><value>Where should your commands be stored?</value></data>
+  <data name="Setup_Data_Hint" xml:space="preserve"><value>commands.json is stored in this folder. Choose a synced folder (OneDrive, NAS, Git repository) to share your commands between computers. If the folder already contains a commands.json, it is used.</value></data>
+  <data name="Setup_Summary_Title" xml:space="preserve"><value>These changes will be made</value></data>
+  <data name="Setup_Summary_Profile" xml:space="preserve"><value>{0}: one marked line in {1}</value></data>
+  <data name="Setup_Summary_Path" xml:space="preserve"><value>{0}: {1} is put at the start of your user PATH</value></data>
+  <data name="Setup_Summary_Remove" xml:space="preserve"><value>{0}: the integration is removed</value></data>
+  <data name="Setup_Summary_Data" xml:space="preserve"><value>Commands are stored in {0}</value></data>
+  <data name="Setup_Summary_None" xml:space="preserve"><value>No shell selected – commands are saved but not available in any terminal.</value></data>
+  <data name="Setup_Summary_Backup" xml:space="preserve"><value>Existing profiles are backed up first (*.qc-backup). Open a new terminal afterwards.</value></data>
+  <data name="Shell_Pwsh" xml:space="preserve"><value>PowerShell 7 (pwsh)</value></data>
+  <data name="Shell_WindowsPowerShell" xml:space="preserve"><value>Windows PowerShell 5.1</value></data>
+  <data name="Shell_Cmd" xml:space="preserve"><value>Command Prompt (cmd)</value></data>
+  <data name="Shell_Bash" xml:space="preserve"><value>bash</value></data>
+  <data name="Shell_BashWindows" xml:space="preserve"><value>Git Bash</value></data>
+  <data name="Shell_Zsh" xml:space="preserve"><value>zsh</value></data>
+  <data name="Shell_NotFound" xml:space="preserve"><value>not found on this computer</value></data>
+  <data name="Shell_Installed" xml:space="preserve"><value>set up</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings_Shells" xml:space="preserve"><value>Shells</value></data>
+  <data name="Settings_Data" xml:space="preserve"><value>Data folder</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Language</value></data>
+  <data name="Settings_LanguageSystem" xml:space="preserve"><value>System default</value></data>
+  <data name="Settings_LanguageRestart" xml:space="preserve"><value>Takes effect after restarting QuickCommands.</value></data>
+  <data name="Settings_RemoveAll" xml:space="preserve"><value>Remove integration completely</value></data>
+  <data name="Settings_RemoveAll_Title" xml:space="preserve"><value>Remove integration?</value></data>
+  <data name="Settings_RemoveAll_Message" xml:space="preserve"><value>The QuickCommands lines are removed from all shell profiles and the bin folder from your PATH. Your commands stay saved.</value></data>
+  <data name="Settings_DataSwitched" xml:space="preserve"><value>The new folder already contained a commands.json – it is used now.</value></data>
+  <data name="Settings_DataCopied" xml:space="preserve"><value>commands.json was copied to the new folder.</value></data>
+  <data name="Error_Apply" xml:space="preserve"><value>Some changes failed:
+{0}</value></data>
+  <data name="Error_Title" xml:space="preserve"><value>Something went wrong</value></data>
+</root>

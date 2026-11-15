@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Main_Search" xml:space="preserve"><value>Suchen…</value></data>
+  <data name="Main_FilterAll" xml:space="preserve"><value>Alle Shells</value></data>
+  <data name="Main_New" xml:space="preserve"><value>+ Neuer Command</value></data>
+  <data name="Main_Settings" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Main_Empty_Title" xml:space="preserve"><value>Kein Command ausgewählt</value></data>
+  <data name="Main_Empty_Hint" xml:space="preserve"><value>Wähle links einen Command aus oder lege einen neuen an (Strg+N).</value></data>
+  <data name="Main_NoCommands" xml:space="preserve"><value>Keine Commands gefunden.</value></data>
+  <data name="Main_Unsaved" xml:space="preserve"><value>Ungespeicherte Änderungen</value></data>
+  <data name="Field_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Field_NameHint" xml:space="preserve"><value>z. B. dev</value></data>
+  <data name="Field_Shell" xml:space="preserve"><value>Shell</value></data>
+  <data name="Field_Description" xml:space="preserve"><value>Beschreibung (optional)</value></data>
+  <data name="Field_DescriptionHint" xml:space="preserve"><value>Was macht der Command? Wird von „qc“ angezeigt.</value></data>
+  <data name="Field_Script" xml:space="preserve"><value>Script</value></data>
+  <data name="Field_AllowOverride" xml:space="preserve"><value>Bewusst überschreiben</value></data>
+  <data name="Action_Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="Action_Delete" xml:space="preserve"><value>Löschen</value></data>
+  <data name="Action_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="Action_Back" xml:space="preserve"><value>Zurück</value></data>
+  <data name="Action_Next" xml:space="preserve"><value>Weiter</value></data>
+  <data name="Action_Install" xml:space="preserve"><value>Installieren</value></data>
+  <data name="Action_Apply" xml:space="preserve"><value>Übernehmen</value></data>
+  <data name="Action_Browse" xml:space="preserve"><value>Durchsuchen…</value></data>
+  <data name="Action_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Unnamed" xml:space="preserve"><value>(ohne Namen)</value></data>
+  <data name="Lang_PowerShell" xml:space="preserve"><value>PowerShell</value></data>
+  <data name="Lang_Cmd" xml:space="preserve"><value>cmd</value></data>
+  <data name="Lang_Sh" xml:space="preserve"><value>sh (bash / zsh)</value></data>
+  <data name="Conflict_Checking" xml:space="preserve"><value>Prüfe vorhandene Befehle auf diesem Rechner…</value></data>
+  <data name="Conflict_EmptyName" xml:space="preserve"><value>Bitte gib einen Namen ein.</value></data>
+  <data name="Conflict_InvalidName" xml:space="preserve"><value>Erlaubt sind nur a–z, 0–9, - und _, beginnend mit Buchstabe oder Ziffer (max. 64 Zeichen).</value></data>
+  <data name="Conflict_ReservedName" xml:space="preserve"><value>„qc“ ist für den QuickCommands-Helfer reserviert.</value></data>
+  <data name="Conflict_Duplicate" xml:space="preserve"><value>Es gibt bereits einen Command mit diesem Namen in dieser Shell.</value></data>
+  <data name="Conflict_CmdBuiltin" xml:space="preserve"><value>„{0}“ ist ein interner cmd-Befehl und kann nicht überschrieben werden – cmd führt immer den eigenen aus.</value></data>
+  <data name="Conflict_ShadowedBySystemPath" xml:space="preserve"><value>Ein Programm im System-PATH hätte in cmd immer Vorrang: {1}</value></data>
+  <data name="Conflict_ExistingExecutable" xml:space="preserve"><value>Es gibt bereits ein Programm mit diesem Namen: {1}. Dein Command hätte Vorrang.</value></data>
+  <data name="Conflict_ShellKeyword" xml:space="preserve"><value>„{0}“ ist ein Schlüsselwort der Sprache und kann nicht verwendet werden.</value></data>
+  <data name="Conflict_CriticalCommand" xml:space="preserve"><value>„{0}“ wird von QuickCommands selbst benötigt und kann nicht überschrieben werden.</value></data>
+  <data name="Conflict_ShellBuiltin" xml:space="preserve"><value>„{0}“ ist ein eingebauter Shell-Befehl. Dein Command hätte Vorrang.</value></data>
+  <data name="Conflict_ExistingPowerShellCommand" xml:space="preserve"><value>PowerShell hat bereits „{0}“ ({1}). Dein Command hätte Vorrang.</value></data>
+  <data name="Status_Saved_Cmd" xml:space="preserve"><value>Gespeichert. In cmd sofort verfügbar.</value></data>
+  <data name="Status_Saved_Shell" xml:space="preserve"><value>Gespeichert. Verfügbar in einem neuen Terminal oder nach „qc reload“.</value></data>
+  <data name="Status_Saved_NotInstalled" xml:space="preserve"><value>Gespeichert. Hinweis: Für {0} ist noch keine Shell eingerichtet – siehe Einstellungen.</value></data>
+  <data name="Status_Deleted" xml:space="preserve"><value>„{0}“ gelöscht.</value></data>
+  <data name="Status_Error" xml:space="preserve"><value>Fehler: {0}</value></data>
+  <data name="Confirm_Delete_Title" xml:space="preserve"><value>Command löschen?</value></data>
+  <data name="Confirm_Delete_Message" xml:space="preserve"><value>„{0}“ wird gelöscht und aus allen erzeugten Scripts entfernt.</value></data>
+  <data name="Confirm_Close_Title" xml:space="preserve"><value>Ungespeicherte Änderungen</value></data>
+  <data name="Confirm_Close_Message" xml:space="preserve"><value>Einige Commands haben ungespeicherte Änderungen. Trotzdem schließen und verwerfen?</value></data>
+  <data name="Confirm_Close_Action" xml:space="preserve"><value>Verwerfen und schließen</value></data>
+  <data name="Template_PowerShell" xml:space="preserve"><value># Argumente: $args (z. B. $args[0])
+</value></data>
+  <data name="Template_Cmd" xml:space="preserve"><value>rem Argumente: %* = alle, %1 = erstes
+rem &quot;exit /b&quot; statt &quot;exit&quot; verwenden - sonst schliesst sich das Terminal.
+</value></data>
+  <data name="Template_Sh" xml:space="preserve"><value># Argumente: &quot;$@&quot; = alle, $1 = erstes
+</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>QuickCommands einrichten</value></data>
+  <data name="Setup_Step" xml:space="preserve"><value>Schritt {0} von 3</value></data>
+  <data name="Setup_Shells_Title" xml:space="preserve"><value>Welche Shells nutzt du?</value></data>
+  <data name="Setup_Shells_Hint" xml:space="preserve"><value>In diesen Shells werden deine Commands verfügbar. Du kannst das jederzeit in den Einstellungen ändern.</value></data>
+  <data name="Setup_Data_Title" xml:space="preserve"><value>Wo sollen deine Commands gespeichert werden?</value></data>
+  <data name="Setup_Data_Hint" xml:space="preserve"><value>In diesem Ordner liegt die commands.json. Wähle einen synchronisierten Ordner (OneDrive, NAS, Git-Repo), um deine Commands zwischen Rechnern zu teilen. Liegt dort schon eine commands.json, wird sie verwendet.</value></data>
+  <data name="Setup_Summary_Title" xml:space="preserve"><value>Diese Änderungen werden vorgenommen</value></data>
+  <data name="Setup_Summary_Profile" xml:space="preserve"><value>{0}: eine markierte Zeile in {1}</value></data>
+  <data name="Setup_Summary_Path" xml:space="preserve"><value>{0}: {1} wird an den Anfang deines Benutzer-PATH gesetzt</value></data>
+  <data name="Setup_Summary_Remove" xml:space="preserve"><value>{0}: die Integration wird entfernt</value></data>
+  <data name="Setup_Summary_Data" xml:space="preserve"><value>Commands werden in {0} gespeichert</value></data>
+  <data name="Setup_Summary_None" xml:space="preserve"><value>Keine Shell gewählt – Commands werden gespeichert, sind aber in keinem Terminal verfügbar.</value></data>
+  <data name="Setup_Summary_Backup" xml:space="preserve"><value>Vorhandene Profile werden vorher gesichert (*.qc-backup). Öffne danach ein neues Terminal.</value></data>
+  <data name="Shell_Pwsh" xml:space="preserve"><value>PowerShell 7 (pwsh)</value></data>
+  <data name="Shell_WindowsPowerShell" xml:space="preserve"><value>Windows PowerShell 5.1</value></data>
+  <data name="Shell_Cmd" xml:space="preserve"><value>Eingabeaufforderung (cmd)</value></data>
+  <data name="Shell_Bash" xml:space="preserve"><value>bash</value></data>
+  <data name="Shell_BashWindows" xml:space="preserve"><value>Git Bash</value></data>
+  <data name="Shell_Zsh" xml:space="preserve"><value>zsh</value></data>
+  <data name="Shell_NotFound" xml:space="preserve"><value>auf diesem Rechner nicht gefunden</value></data>
+  <data name="Shell_Installed" xml:space="preserve"><value>eingerichtet</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Settings_Shells" xml:space="preserve"><value>Shells</value></data>
+  <data name="Settings_Data" xml:space="preserve"><value>Datenordner</value></data>
+  <data name="Settings_Language" xml:space="preserve"><value>Sprache</value></data>
+  <data name="Settings_LanguageSystem" xml:space="preserve"><value>Systemsprache</value></data>
+  <data name="Settings_LanguageRestart" xml:space="preserve"><value>Wird nach einem Neustart von QuickCommands aktiv.</value></data>
+  <data name="Settings_RemoveAll" xml:space="preserve"><value>Integration komplett entfernen</value></data>
+  <data name="Settings_RemoveAll_Title" xml:space="preserve"><value>Integration entfernen?</value></data>
+  <data name="Settings_RemoveAll_Message" xml:space="preserve"><value>Die QuickCommands-Zeilen werden aus allen Shell-Profilen und der bin-Ordner aus deinem PATH entfernt. Deine Commands bleiben gespeichert.</value></data>
+  <data name="Settings_DataSwitched" xml:space="preserve"><value>Im neuen Ordner lag bereits eine commands.json – sie wird jetzt verwendet.</value></data>
+  <data name="Settings_DataCopied" xml:space="preserve"><value>Die commands.json wurde in den neuen Ordner kopiert.</value></data>
+  <data name="Error_Apply" xml:space="preserve"><value>Einige Änderungen sind fehlgeschlagen:
+{0}</value></data>
+  <data name="Error_Title" xml:space="preserve"><value>Etwas ist schiefgelaufen</value></data>
+</root>

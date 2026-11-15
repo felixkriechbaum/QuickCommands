@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Renders the real UI headless with demo data into PNGs (docs/screenshots). Never touches profiles or PATH. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Headless" />
+    <PackageReference Include="Avalonia.Skia" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\QuickCommands.App\QuickCommands.App.csproj" />
+  </ItemGroup>
+
+</Project>

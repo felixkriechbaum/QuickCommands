@@ -1,0 +1,67 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="QuickCommands.App.App"
+             RequestedThemeVariant="Default">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+          <SolidColorBrush x:Key="QcContentBackground" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="QcSidebarBrush" Color="#F4F5F7" />
+          <SolidColorBrush x:Key="QcEditorBackground" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="QcBorderBrush" Color="#DDE0E5" />
+          <SolidColorBrush x:Key="QcMutedText" Color="#5E6570" />
+          <SolidColorBrush x:Key="QcErrorText" Color="#A4262C" />
+          <SolidColorBrush x:Key="QcErrorBackground" Color="#FDE7E9" />
+          <SolidColorBrush x:Key="QcWarningText" Color="#7A4A00" />
+          <SolidColorBrush x:Key="QcWarningBackground" Color="#FFF4CE" />
+          <SolidColorBrush x:Key="QcSuccessText" Color="#0F7B0F" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+          <SolidColorBrush x:Key="QcContentBackground" Color="#202329" />
+          <SolidColorBrush x:Key="QcSidebarBrush" Color="#191B20" />
+          <SolidColorBrush x:Key="QcEditorBackground" Color="#17191D" />
+          <SolidColorBrush x:Key="QcBorderBrush" Color="#33373F" />
+          <SolidColorBrush x:Key="QcMutedText" Color="#9AA1AC" />
+          <SolidColorBrush x:Key="QcErrorText" Color="#FF99A4" />
+          <SolidColorBrush x:Key="QcErrorBackground" Color="#442726" />
+          <SolidColorBrush x:Key="QcWarningText" Color="#FCE100" />
+          <SolidColorBrush x:Key="QcWarningBackground" Color="#433519" />
+          <SolidColorBrush x:Key="QcSuccessText" Color="#6CCB5F" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+      <FontFamily x:Key="QcMonoFont">Cascadia Mono, Consolas, Menlo, DejaVu Sans Mono, monospace</FontFamily>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+
+    <Style Selector="Window">
+      <Setter Property="Background" Value="{DynamicResource QcContentBackground}" />
+    </Style>
+
+    <Style Selector="TextBlock.label">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Margin" Value="0,0,0,4" />
+      <Setter Property="Foreground" Value="{DynamicResource QcMutedText}" />
+    </Style>
+    <Style Selector="TextBlock.muted">
+      <Setter Property="Foreground" Value="{DynamicResource QcMutedText}" />
+    </Style>
+    <Style Selector="TextBlock.heading">
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.section">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="Margin" Value="0,0,0,8" />
+    </Style>
+    <Style Selector="Button.danger">
+      <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
+    </Style>
+  </Application.Styles>
+</Application>
