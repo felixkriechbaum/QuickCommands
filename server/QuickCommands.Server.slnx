@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/QuickCommands.Server/QuickCommands.Server.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/QuickCommands.Server.Tests/QuickCommands.Server.Tests.csproj" />
+  </Folder>
+</Solution>

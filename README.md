@@ -98,6 +98,7 @@ src/QuickCommands.App            Avalonia UI (MVVM with CommunityToolkit.Mvvm)
 tests/QuickCommands.Tests        xUnit: unit tests plus tests that run the generated scripts in pwsh, cmd, bash and zsh
 tools/QuickCommands.Screenshots  renders the UI headless with sample data into docs/screenshots
 tools/strings.ps1                source of all UI strings (de/en), generates the .resx files
+server/                          ASP.NET Core backend for cloud save and the store (own solution, see server/README.md)
 packaging/                       Inno Setup script, macOS app bundle, Linux package, winget manifests
 ```
 

@@ -1,0 +1,14 @@
+<Project>
+  <!-- Independent of the desktop props in the repository root: the server has its own version scheme (YYYY.M.build). -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Version>0.0.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Authors>Felix Kriechbaum</Authors>
+    <Product>QuickCommands Server</Product>
+    <Copyright>Copyright (c) 2026 Felix Kriechbaum</Copyright>
+  </PropertyGroup>
+</Project>

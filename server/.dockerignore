@@ -1,0 +1,9 @@
+**/bin/
+**/obj/
+**/*.user
+.config/
+docs/
+openapi/
+tests/
+compose*.yml
+.env*

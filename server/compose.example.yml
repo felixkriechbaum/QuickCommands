@@ -1,0 +1,26 @@
+# Template for the server's Docker environment (same pattern as the other stacks):
+# - MySQL runs separately as "mysql:3306" in the external network internal_com
+# - the API binds to 127.0.0.1 only; nginx on the host forwards the domain to port 3005
+# Values come from a .env file next to this file (see .env.example).
+name: quickcommands
+
+services:
+  quickcommands-server:
+    image: ghcr.io/felixkriechbaum/quickcommands-server:${IMAGE_TAG:-latest}
+    container_name: quickcommands-server
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${SERVER_PORT:-3005}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: ${DB_CONNECTION_STRING:?DB_CONNECTION_STRING is required}
+      Firebase__ProjectId: ${FIREBASE_PROJECT_ID:?FIREBASE_PROJECT_ID is required}
+      Store__AdminUids: ${ADMIN_UIDS:-}
+      LoggerUi__Url: ${LOGGERUI_URL:-}
+      LoggerUi__Token: ${LOGGERUI_TOKEN:-}
+    networks:
+      - internal_com
+
+networks:
+  internal_com:
+    external: true

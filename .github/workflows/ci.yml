@@ -3,7 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+    # The server has its own workflow (server.yml).
+    paths-ignore: ['server/**', '.github/workflows/server.yml']
   pull_request:
+    paths-ignore: ['server/**', '.github/workflows/server.yml']
   workflow_dispatch:
 
 jobs:
