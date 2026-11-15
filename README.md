@@ -11,7 +11,7 @@ Läuft auf Windows, macOS und Linux.
 | System | So geht's |
 |---|---|
 | Windows | `winget install FelixKriechbaum.QuickCommands` (sobald freigegeben) oder `QuickCommands-<version>-win-x64-setup.exe` aus den [Releases](../../releases) (ohne Adminrechte) |
-| macOS | `QuickCommands-<version>-macos-arm64.zip` (Apple Silicon) bzw. `-x64.zip` (Intel) entpacken, App in den Programme-Ordner ziehen. Die App ist nicht notarisiert: beim ersten Start Rechtsklick → Öffnen (oder `xattr -dr com.apple.quarantine /Applications/QuickCommands.app`). |
+| macOS (ab 14) | `brew install --cask felixkriechbaum/tap/quickcommands` oder `QuickCommands-<version>-macos-arm64.zip` (Apple Silicon) bzw. `-x64.zip` (Intel) entpacken und die App in den Programme-Ordner ziehen. Die App ist nicht notarisiert: Beim ersten Start einmal unter Systemeinstellungen → Datenschutz & Sicherheit „Dennoch öffnen“ klicken. |
 | Linux | `QuickCommands-<version>-linux-x64.tar.gz` entpacken, `./install.sh` ausführen. Das legt einen Eintrag im App-Menü und `quickcommands` in `~/.local/bin` an. `./install.sh --uninstall` entfernt beides. |
 
 Beim ersten Start fragt ein Assistent, welche Shells du nutzt und wo deine Commands liegen sollen. Vor jeder Änderung
@@ -120,10 +120,12 @@ headless auf Linux und macOS.
 1. Version in `Directory.Build.props` erhöhen, committen.
 2. Tag pushen: `git tag v0.2.0 && git push origin v0.2.0`
 3. Der Workflow `release.yml` baut alle Plattformen und legt einen **Release-Entwurf** an mit Setup, portabler
-   `.exe`, macOS-Zips, Linux-Archiv, `SHA256SUMS.txt` und den fertigen winget-Manifesten.
+   `.exe`, macOS-Zips, Linux-Archiv, `SHA256SUMS.txt`, den fertigen winget-Manifesten und dem Homebrew-Cask
+   `quickcommands.rb` (vorher auf einem Mac per `brew install` getestet).
 4. Entwurf prüfen und veröffentlichen. Ist das Secret `WINGET_TOKEN` gesetzt, reicht `winget.yml` die neue Version
    automatisch bei winget ein. Die erste Version muss einmal von Hand eingereicht werden, siehe
-   [packaging/winget/README.md](packaging/winget/README.md).
+   [packaging/winget/README.md](packaging/winget/README.md). Ist `HOMEBREW_TAP_TOKEN` gesetzt, aktualisiert
+   `homebrew.yml` den Tap `felixkriechbaum/homebrew-tap`, siehe [packaging/homebrew/README.md](packaging/homebrew/README.md).
 
 ## Lizenz
 

@@ -1,0 +1,36 @@
+name: Homebrew
+
+# When a release is published, copy its quickcommands.rb into the tap felixkriechbaum/homebrew-tap.
+# Needs the repository secret HOMEBREW_TAP_TOKEN (fine-grained token, "Contents: Read and write" on the tap repo).
+# Without the secret this job does nothing.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to publish (e.g. 0.2.0)
+        required: true
+
+jobs:
+  tap:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update cask in the tap
+        env:
+          TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          TAG: ${{ github.event.release.tag_name || format('v{0}', github.event.inputs.version) }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$TOKEN" ]; then echo "HOMEBREW_TAP_TOKEN is not set - skipping."; exit 0; fi
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern quickcommands.rb
+          git clone "https://x-access-token:$TOKEN@github.com/felixkriechbaum/homebrew-tap.git" tap
+          mkdir -p tap/Casks
+          cp quickcommands.rb tap/Casks/quickcommands.rb
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/quickcommands.rb
+          git diff --cached --quiet && { echo "Cask unchanged."; exit 0; }
+          git commit -m "quickcommands ${TAG#v}"
+          git push

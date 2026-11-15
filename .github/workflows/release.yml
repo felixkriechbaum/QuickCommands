@@ -111,8 +111,43 @@ jobs:
           name: linux
           path: dist/*
 
+  homebrew-test:
+    # Installs the freshly built app through the cask (from a local tap, with file:// URLs) and uninstalls it again.
+    needs: [version, macos]
+    runs-on: macos-latest
+    env:
+      VERSION: ${{ needs.version.outputs.version }}
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_FROM_API: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: macos-*
+          path: dist
+          merge-multiple: true
+      - name: Style check
+        run: |
+          brew tap-new --no-git local/qc
+          tap="$(brew --repository)/Library/Taps/local/homebrew-qc"
+          mkdir -p "$tap/Casks"
+          sed -e "s|__VERSION__|$VERSION|g" -e "s|__SHA256_ARM64__|$(shasum -a 256 dist/*-arm64.zip | cut -d' ' -f1)|" \
+              -e "s|__SHA256_X64__|$(shasum -a 256 dist/*-x64.zip | cut -d' ' -f1)|" \
+              packaging/homebrew/quickcommands.rb > "$tap/Casks/quickcommands.rb"
+          brew style --cask local/qc/quickcommands
+          # For the install test the download URL points at the local zip.
+          sed -i '' -e "s|url \"https://.*\"|url \"file://$PWD/dist/QuickCommands-#{version}-macos-#{arch}.zip\"|" "$tap/Casks/quickcommands.rb"
+      - name: Install, check, uninstall
+        run: |
+          brew install --cask local/qc/quickcommands
+          test -x /Applications/QuickCommands.app/Contents/MacOS/QuickCommands
+          codesign --verify --deep --strict /Applications/QuickCommands.app
+          /Applications/QuickCommands.app/Contents/MacOS/QuickCommands --remove-integration
+          brew uninstall --cask quickcommands
+          test ! -e /Applications/QuickCommands.app
+
   release:
-    needs: [version, windows, macos, linux]
+    needs: [version, windows, macos, linux, homebrew-test]
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.version.outputs.version }}
@@ -133,6 +168,12 @@ jobs:
             sed -e "s|__VERSION__|$VERSION|g" -e "s|__URL__|$url|g" -e "s|__SHA256__|$sha|g" "$f" > "winget/$dir/$(basename "$f")"
           done
           (cd winget && zip -r "../dist/winget-manifests-$VERSION.zip" manifests)
+      - name: Homebrew cask
+        run: |
+          arm=$(sha256sum "dist/QuickCommands-$VERSION-macos-arm64.zip" | cut -d' ' -f1)
+          x64=$(sha256sum "dist/QuickCommands-$VERSION-macos-x64.zip" | cut -d' ' -f1)
+          sed -e "s|__VERSION__|$VERSION|g" -e "s|__SHA256_ARM64__|$arm|g" -e "s|__SHA256_X64__|$x64|g" \
+            packaging/homebrew/quickcommands.rb > dist/quickcommands.rb
           (cd dist && sha256sum * > SHA256SUMS.txt)
           ls -la dist
       - uses: actions/upload-artifact@v4
