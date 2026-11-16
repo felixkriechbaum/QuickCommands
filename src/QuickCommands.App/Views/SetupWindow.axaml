@@ -8,28 +8,28 @@
         Icon="/Assets/icon.ico"
         Width="640" Height="520" CanResize="False"
         WindowStartupLocation="CenterOwner">
-  <DockPanel Margin="28,24">
-    <StackPanel DockPanel.Dock="Top" Spacing="2" Margin="0,0,0,18">
+  <DockPanel Margin="24">
+    <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,20">
       <TextBlock Classes="muted" FontSize="12" Text="{Binding StepText}" />
       <TextBlock Classes="heading" Text="{x:Static r:Strings.Setup_Title}" />
     </StackPanel>
 
-    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,8,Auto" Margin="0,18,0,0">
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="Auto,*,Auto,8,Auto" Margin="0,20,0,0">
       <Button Content="{x:Static r:Strings.Action_Cancel}" Click="OnCancel" />
       <Button Grid.Column="2" Content="{x:Static r:Strings.Action_Back}" Command="{Binding BackCommand}" IsEnabled="{Binding CanGoBack}" />
-      <Button Grid.Column="4" Classes="accent" MinWidth="110" HorizontalContentAlignment="Center"
+      <Button Grid.Column="4" Classes="accent" MinWidth="112" HorizontalContentAlignment="Center"
               Content="{Binding NextLabel}" Click="OnNext" />
     </Grid>
 
     <Panel>
       <!-- Step 1: shells -->
-      <StackPanel IsVisible="{Binding IsStep1}" Spacing="6">
+      <StackPanel IsVisible="{Binding IsStep1}" Spacing="8">
         <TextBlock Classes="section" Text="{x:Static r:Strings.Setup_Shells_Title}" />
-        <TextBlock Classes="muted" TextWrapping="Wrap" Text="{x:Static r:Strings.Setup_Shells_Hint}" Margin="0,0,0,10" />
+        <TextBlock Classes="muted" TextWrapping="Wrap" Text="{x:Static r:Strings.Setup_Shells_Hint}" Margin="0,0,0,8" />
         <ItemsControl ItemsSource="{Binding Shells}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:ShellOptionViewModel">
-              <StackPanel Orientation="Horizontal" Spacing="10">
+              <StackPanel Orientation="Horizontal" Spacing="8">
                 <CheckBox Content="{Binding Label}" IsChecked="{Binding IsChecked}" IsEnabled="{Binding IsEnabled}" />
                 <TextBlock Classes="muted" FontSize="12" VerticalAlignment="Center" Text="{Binding StatusText}" IsVisible="{Binding HasStatus}" />
               </StackPanel>
@@ -39,9 +39,9 @@
       </StackPanel>
 
       <!-- Step 2: data folder -->
-      <StackPanel IsVisible="{Binding IsStep2}" Spacing="6">
+      <StackPanel IsVisible="{Binding IsStep2}" Spacing="8">
         <TextBlock Classes="section" Text="{x:Static r:Strings.Setup_Data_Title}" />
-        <TextBlock Classes="muted" TextWrapping="Wrap" Text="{x:Static r:Strings.Setup_Data_Hint}" Margin="0,0,0,10" />
+        <TextBlock Classes="muted" TextWrapping="Wrap" Text="{x:Static r:Strings.Setup_Data_Hint}" Margin="0,0,0,8" />
         <Grid ColumnDefinitions="*,8,Auto">
           <TextBox Text="{Binding DataDirectory}" />
           <Button Grid.Column="2" Content="{x:Static r:Strings.Action_Browse}" Click="OnBrowse" />
@@ -49,19 +49,19 @@
       </StackPanel>
 
       <!-- Step 3: summary -->
-      <StackPanel IsVisible="{Binding IsStep3}" Spacing="6">
+      <StackPanel IsVisible="{Binding IsStep3}" Spacing="8">
         <TextBlock Classes="section" Text="{x:Static r:Strings.Setup_Summary_Title}" />
         <ItemsControl ItemsSource="{Binding PlannedChanges}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="x:String">
-              <Grid ColumnDefinitions="18,*" Margin="0,3">
-                <TextBlock Text="•" />
+              <Grid ColumnDefinitions="16,*" Margin="0,4">
+                <Ellipse Width="4" Height="4" Fill="{DynamicResource QcMutedText}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,7,0,0" />
                 <TextBlock Grid.Column="1" Text="{Binding}" TextWrapping="Wrap" />
               </Grid>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <TextBlock Classes="muted" TextWrapping="Wrap" Margin="0,10,0,0" Text="{x:Static r:Strings.Setup_Summary_Backup}" />
+        <TextBlock Classes="muted" TextWrapping="Wrap" Margin="0,8,0,0" Text="{x:Static r:Strings.Setup_Summary_Backup}" />
       </StackPanel>
     </Panel>
   </DockPanel>

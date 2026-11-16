@@ -181,6 +181,10 @@ public sealed partial class CommandItemViewModel : ObservableObject
     /// <summary>The usage line as `name --help` will print it.</summary>
     public string UsagePreview => HasParameters ? string.Format(Strings.Param_Usage, HelpText.UsageLine(ToModel())) : "";
 
+    /// <summary>The command as you would type it, shown as a terminal line under the parameters.</summary>
+    public string UsageLine => HelpText.UsageLine(ToModel());
+    public bool ShowUsageLine => CommandNameRules.IsValid(CommandNameRules.Normalize(Name));
+
     /// <summary>How the script reaches the parameters and the remaining arguments.</summary>
     public string VariableHint
     {
@@ -256,6 +260,7 @@ public sealed partial class CommandItemViewModel : ObservableObject
     {
         ValidateParameters();
         OnPropertyChanged(nameof(UsagePreview));
+        OnPropertyChanged(nameof(UsageLine));
         OnPropertyChanged(nameof(VariableHint));
         RaiseState();
     }
@@ -290,7 +295,9 @@ public sealed partial class CommandItemViewModel : ObservableObject
     partial void OnNameChanged(string value)
     {
         OnPropertyChanged(nameof(DisplayName));
+        OnPropertyChanged(nameof(ShowUsageLine));
         OnPropertyChanged(nameof(UsagePreview));
+        OnPropertyChanged(nameof(UsageLine));
         OnPropertyChanged(nameof(CanTry));
         RaiseState();
         IdentityChanged?.Invoke(this, EventArgs.Empty);

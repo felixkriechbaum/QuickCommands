@@ -2,15 +2,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:QuickCommands.App.ViewModels"
         xmlns:r="using:QuickCommands.App.Resources"
+        xmlns:c="using:QuickCommands.App.Controls"
         x:Class="QuickCommands.App.Views.TemplatesWindow"
         x:DataType="vm:TemplatesViewModel"
         Title="{x:Static r:Strings.Templates_Title}"
         Icon="/Assets/icon.ico"
         Width="900" Height="580" MinWidth="700" MinHeight="420"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
-  <DockPanel Margin="24,20">
+  <DockPanel Margin="24">
     <TextBlock DockPanel.Dock="Top" Classes="heading" Text="{x:Static r:Strings.Templates_Title}" />
-    <TextBlock DockPanel.Dock="Top" Classes="muted" Text="{x:Static r:Strings.Templates_Hint}" Margin="0,4,0,14" />
+    <TextBlock DockPanel.Dock="Top" Classes="muted" Text="{x:Static r:Strings.Templates_Hint}" Margin="0,4,0,16" />
 
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,16,0,0">
       <Button Content="{x:Static r:Strings.Action_Cancel}" Click="OnCancel" IsCancel="True" />
@@ -18,19 +19,22 @@
               IsEnabled="{Binding HasSelection}" />
     </StackPanel>
 
-    <Grid ColumnDefinitions="300,20,*">
+    <Grid ColumnDefinitions="280,24,*">
       <DockPanel>
-        <TextBox DockPanel.Dock="Top" PlaceholderText="{x:Static r:Strings.Main_Search}" Text="{Binding SearchText}" Margin="0,0,0,8" />
-        <ListBox Classes="commands" ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" DoubleTapped="OnDoubleTapped"
-                 Background="Transparent">
+        <TextBox DockPanel.Dock="Top" PlaceholderText="{x:Static r:Strings.Main_Search}" Text="{Binding SearchText}" Margin="0,0,0,12">
+          <TextBox.InnerLeftContent>
+            <c:Icon Data="{StaticResource IconSearch}" Foreground="{DynamicResource QcMutedText}" Margin="12,0,0,0" />
+          </TextBox.InnerLeftContent>
+        </TextBox>
+        <ListBox Classes="commands" ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" DoubleTapped="OnDoubleTapped">
           <ListBox.ItemTemplate>
             <DataTemplate x:DataType="vm:TemplateItemViewModel">
               <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                <TextBlock Text="{Binding Name}" FontFamily="{StaticResource QcMonoFont}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding Name}" FontFamily="{StaticResource QcMonoFont}" FontWeight="Medium" />
                 <Border Grid.Column="1" Classes="badge" Classes.ps="{Binding IsPowerShell}" Classes.sh="{Binding IsSh}">
                   <TextBlock Text="{Binding Badge}" />
                 </Border>
-                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Classes="muted" FontSize="12" Margin="0,3,0,0"
+                <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Classes="muted" FontSize="12" Margin="0,4,0,0"
                            Text="{Binding Description}" TextTrimming="CharacterEllipsis" />
               </Grid>
             </DataTemplate>
@@ -38,18 +42,20 @@
         </ListBox>
       </DockPanel>
 
-      <ScrollViewer Grid.Column="2" IsVisible="{Binding HasSelection}">
-        <StackPanel Spacing="10">
+      <DockPanel Grid.Column="2" IsVisible="{Binding HasSelection}">
+        <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,12">
           <TextBlock Classes="section" Text="{Binding Selected.Name}" FontFamily="{StaticResource QcMonoFont}" Margin="0" />
-          <TextBlock Text="{Binding Selected.Description}" TextWrapping="Wrap" />
-          <Border Classes="code">
-            <SelectableTextBlock Text="{Binding Selected.Help}" TextWrapping="NoWrap" />
-          </Border>
-          <Border Classes="code">
-            <SelectableTextBlock Text="{Binding Selected.Script}" TextWrapping="Wrap" />
-          </Border>
+          <TextBlock Classes="secondary" Text="{Binding Selected.Description}" TextWrapping="Wrap" />
         </StackPanel>
-      </ScrollViewer>
+        <Border DockPanel.Dock="Top" Classes="code" Margin="0,0,0,12">
+          <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <SelectableTextBlock Classes="secondary" Text="{Binding Selected.Help}" TextWrapping="NoWrap" />
+          </ScrollViewer>
+        </Border>
+        <Border Classes="code" Padding="4,8,0,0">
+          <c:CodeView Code="{Binding Selected.Script}" Language="{Binding Selected.Language}" />
+        </Border>
+      </DockPanel>
     </Grid>
   </DockPanel>
 </Window>

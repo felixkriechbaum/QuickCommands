@@ -17,6 +17,7 @@ public sealed class TemplateItemViewModel(CommandTemplate template, string langu
     public string Badge => LanguageOption.For(Template.Language).Badge;
     public bool IsPowerShell => Template.Language == ShellLanguage.PowerShell;
     public bool IsSh => Template.Language == ShellLanguage.Sh;
+    public ShellLanguage Language => Template.Language;
     public string Script => Command.Script.TrimEnd();
     public string Help => string.Join(Environment.NewLine, HelpText.Lines(Command, TerminalTexts.For(languageCode), includeLanguage: false).Skip(1)).Trim();
 }
@@ -87,6 +88,7 @@ public sealed partial class ImportCandidateViewModel : ObservableObject
     public string Badge => LanguageOption.For(Candidate.Language).Badge;
     public bool IsPowerShell => Candidate.Language == ShellLanguage.PowerShell;
     public bool IsSh => Candidate.Language == ShellLanguage.Sh;
+    public ShellLanguage Language => Candidate.Language;
     public string Details => (Candidate.IsAlias ? Strings.Import_Alias : Strings.Import_Function) + " · " +
                              Path.GetFileName(Candidate.SourceFile) + ":" + Candidate.StartLine +
                              (BlockedReason is null ? "" : " · " + BlockedReason);
@@ -276,12 +278,13 @@ public sealed partial class HistoryViewModel : ObservableObject
     public partial HistoryEntryViewModel? Selected { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanRestoreCommand), nameof(Preview))]
+    [NotifyPropertyChangedFor(nameof(CanRestoreCommand), nameof(Preview), nameof(PreviewLanguage))]
     public partial HistoryCommandViewModel? SelectedCommand { get; set; }
 
     public bool CanRestoreAll => Selected is not null;
     public bool CanRestoreCommand => SelectedCommand is { Change: ChangeKind.Added or ChangeKind.Changed };
     public string Preview => SelectedCommand?.Command.Script.TrimEnd() ?? "";
+    public ShellLanguage PreviewLanguage => SelectedCommand?.Command.Language ?? ShellLanguage.PowerShell;
 
     partial void OnSelectedChanged(HistoryEntryViewModel? value)
     {

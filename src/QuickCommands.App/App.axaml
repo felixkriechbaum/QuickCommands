@@ -1,34 +1,178 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="using:QuickCommands.App.Controls"
              x:Class="QuickCommands.App.App"
              RequestedThemeVariant="Default">
 
+  <!--
+    Design: graphite neutrals, the prompt blue of the app icon as the only accent.
+    Colour lives in the code (syntax highlighting) and the usage line; the chrome stays quiet.
+    Spacing on a 4px grid, radii: chips 4, controls 8, panels 12.
+  -->
   <Application.Resources>
     <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://QuickCommands/Icons.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <!-- Accent family read by the Fluent theme (dark mode uses Light2, light mode Dark1). -->
+      <Color x:Key="SystemAccentColor">#2E9BE6</Color>
+      <Color x:Key="SystemAccentColorLight1">#47B0F5</Color>
+      <Color x:Key="SystemAccentColorLight2">#5EC4FF</Color>
+      <Color x:Key="SystemAccentColorLight3">#8FD6FF</Color>
+      <Color x:Key="SystemAccentColorDark1">#0B6BC0</Color>
+      <Color x:Key="SystemAccentColorDark2">#095AA2</Color>
+      <Color x:Key="SystemAccentColorDark3">#074A86</Color>
+
       <ResourceDictionary.ThemeDictionaries>
         <ResourceDictionary x:Key="Light">
           <SolidColorBrush x:Key="QcContentBackground" Color="#FFFFFF" />
-          <SolidColorBrush x:Key="QcSidebarBrush" Color="#F4F5F7" />
+          <SolidColorBrush x:Key="QcSidebarBrush" Color="#F5F5F6" />
           <SolidColorBrush x:Key="QcEditorBackground" Color="#FFFFFF" />
-          <SolidColorBrush x:Key="QcBorderBrush" Color="#DDE0E5" />
-          <SolidColorBrush x:Key="QcMutedText" Color="#5E6570" />
-          <SolidColorBrush x:Key="QcErrorText" Color="#A4262C" />
-          <SolidColorBrush x:Key="QcErrorBackground" Color="#FDE7E9" />
-          <SolidColorBrush x:Key="QcWarningText" Color="#7A4A00" />
-          <SolidColorBrush x:Key="QcWarningBackground" Color="#FFF4CE" />
-          <SolidColorBrush x:Key="QcSuccessText" Color="#0F7B0F" />
+          <SolidColorBrush x:Key="QcRaisedBrush" Color="#EDEDEF" />
+          <SolidColorBrush x:Key="QcHoverBrush" Color="#EBEBED" />
+          <SolidColorBrush x:Key="QcBorderBrush" Color="#17171717" />
+          <SolidColorBrush x:Key="QcControlBorderBrush" Color="#26171717" />
+          <SolidColorBrush x:Key="QcControlBorderHoverBrush" Color="#40171717" />
+          <SolidColorBrush x:Key="QcPrimaryText" Color="#171717" />
+          <SolidColorBrush x:Key="QcSecondaryText" Color="#525252" />
+          <SolidColorBrush x:Key="QcMutedText" Color="#6E6E73" />
+          <SolidColorBrush x:Key="QcAccentText" Color="#0B6BC0" />
+          <SolidColorBrush x:Key="QcKeycapBorder" Color="#26171717" />
+          <SolidColorBrush x:Key="QcKeycapOnAccentBorder" Color="#66FFFFFF" />
+          <SolidColorBrush x:Key="QcErrorText" Color="#B91C1C" />
+          <SolidColorBrush x:Key="QcErrorBackground" Color="#12DC2626" />
+          <SolidColorBrush x:Key="QcWarningText" Color="#8A4B0B" />
+          <SolidColorBrush x:Key="QcWarningBackground" Color="#17D97706" />
+          <SolidColorBrush x:Key="QcSuccessText" Color="#15803D" />
+          <SolidColorBrush x:Key="QcShellPs" Color="#2563A8" />
+          <SolidColorBrush x:Key="QcShellSh" Color="#1F7A4D" />
+          <SolidColorBrush x:Key="QcShellCmd" Color="#525252" />
+
+          <!-- Fluent controls on the ramp -->
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#0B6BC0" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#0A60AD" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#0B6BC0" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#0B6BC0" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#0A60AD" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#0B6BC0" />
+          <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundChecked" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPressed" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#0B6BC0" />
+          <SolidColorBrush x:Key="AccentButtonBackground" Color="#0B6BC0" />
+          <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#0A60AD" />
+          <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#09559A" />
+          <SolidColorBrush x:Key="AccentButtonBackgroundDisabled" Color="#EDEDEF" />
+          <SolidColorBrush x:Key="AccentButtonForeground" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="AccentButtonForegroundDisabled" Color="#A3A3A8" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrush" Color="#00000000" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrushPointerOver" Color="#00000000" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrushPressed" Color="#00000000" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrushDisabled" Color="#00000000" />
+          <SolidColorBrush x:Key="ButtonBackground" Color="#EDEDEF" />
+          <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#E4E4E7" />
+          <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#DCDCDF" />
+          <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="#F3F3F4" />
+          <SolidColorBrush x:Key="ButtonBorderBrush" Color="#14171717" />
+          <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#1F171717" />
+          <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="#1F171717" />
+          <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="#0F171717" />
+          <SolidColorBrush x:Key="ButtonForeground" Color="#171717" />
+          <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#171717" />
+          <SolidColorBrush x:Key="ButtonForegroundPressed" Color="#171717" />
+          <SolidColorBrush x:Key="TextControlBackground" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="#F5F5F6" />
+          <SolidColorBrush x:Key="TextControlBorderBrush" Color="#26171717" />
+          <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#40171717" />
+          <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="#14171717" />
+          <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#6E6E73" />
+          <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#6E6E73" />
+          <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#8E8E93" />
+          <SolidColorBrush x:Key="ComboBoxBackground" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#F7F7F8" />
+          <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#EDEDEF" />
+          <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#26171717" />
+          <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#40171717" />
+          <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="#40171717" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Dark">
-          <SolidColorBrush x:Key="QcContentBackground" Color="#202329" />
-          <SolidColorBrush x:Key="QcSidebarBrush" Color="#191B20" />
-          <SolidColorBrush x:Key="QcEditorBackground" Color="#17191D" />
-          <SolidColorBrush x:Key="QcBorderBrush" Color="#33373F" />
-          <SolidColorBrush x:Key="QcMutedText" Color="#9AA1AC" />
-          <SolidColorBrush x:Key="QcErrorText" Color="#FF99A4" />
-          <SolidColorBrush x:Key="QcErrorBackground" Color="#442726" />
-          <SolidColorBrush x:Key="QcWarningText" Color="#FCE100" />
-          <SolidColorBrush x:Key="QcWarningBackground" Color="#433519" />
-          <SolidColorBrush x:Key="QcSuccessText" Color="#6CCB5F" />
+          <SolidColorBrush x:Key="QcContentBackground" Color="#141415" />
+          <SolidColorBrush x:Key="QcSidebarBrush" Color="#0F0F10" />
+          <SolidColorBrush x:Key="QcEditorBackground" Color="#19191B" />
+          <SolidColorBrush x:Key="QcRaisedBrush" Color="#232325" />
+          <SolidColorBrush x:Key="QcHoverBrush" Color="#1B1B1D" />
+          <SolidColorBrush x:Key="QcBorderBrush" Color="#17EDEDED" />
+          <SolidColorBrush x:Key="QcControlBorderBrush" Color="#21EDEDED" />
+          <SolidColorBrush x:Key="QcControlBorderHoverBrush" Color="#36EDEDED" />
+          <SolidColorBrush x:Key="QcPrimaryText" Color="#EDEDED" />
+          <SolidColorBrush x:Key="QcSecondaryText" Color="#A1A1A6" />
+          <SolidColorBrush x:Key="QcMutedText" Color="#88888E" />
+          <SolidColorBrush x:Key="QcAccentText" Color="#5EC4FF" />
+          <SolidColorBrush x:Key="QcKeycapBorder" Color="#2EEDEDED" />
+          <SolidColorBrush x:Key="QcKeycapOnAccentBorder" Color="#40000000" />
+          <SolidColorBrush x:Key="QcErrorText" Color="#F2878A" />
+          <SolidColorBrush x:Key="QcErrorBackground" Color="#1FE5484D" />
+          <SolidColorBrush x:Key="QcWarningText" Color="#F0BC64" />
+          <SolidColorBrush x:Key="QcWarningBackground" Color="#1CE5A23A" />
+          <SolidColorBrush x:Key="QcSuccessText" Color="#4CC38A" />
+          <SolidColorBrush x:Key="QcShellPs" Color="#7FB4EE" />
+          <SolidColorBrush x:Key="QcShellSh" Color="#6CC596" />
+          <SolidColorBrush x:Key="QcShellCmd" Color="#A1A1A6" />
+
+          <SolidColorBrush x:Key="AccentButtonBackground" Color="#5EC4FF" />
+          <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="#7ACFFF" />
+          <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="#4FB3EE" />
+          <SolidColorBrush x:Key="AccentButtonBackgroundDisabled" Color="#232325" />
+          <SolidColorBrush x:Key="AccentButtonForeground" Color="#06111A" />
+          <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="#06111A" />
+          <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="#06111A" />
+          <SolidColorBrush x:Key="AccentButtonForegroundDisabled" Color="#5E5E64" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrush" Color="#00000000" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrushPointerOver" Color="#00000000" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrushPressed" Color="#00000000" />
+          <SolidColorBrush x:Key="AccentButtonBorderBrushDisabled" Color="#00000000" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillChecked" Color="#5EC4FF" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPointerOver" Color="#7ACFFF" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundFillCheckedPressed" Color="#5EC4FF" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeChecked" Color="#5EC4FF" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPointerOver" Color="#7ACFFF" />
+          <SolidColorBrush x:Key="CheckBoxCheckBackgroundStrokeCheckedPressed" Color="#5EC4FF" />
+          <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundChecked" Color="#06111A" />
+          <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPointerOver" Color="#06111A" />
+          <SolidColorBrush x:Key="CheckBoxCheckGlyphForegroundCheckedPressed" Color="#06111A" />
+          <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="#5EC4FF" />
+          <SolidColorBrush x:Key="ButtonBackground" Color="#232325" />
+          <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2A2A2D" />
+          <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#1F1F21" />
+          <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="#1B1B1D" />
+          <SolidColorBrush x:Key="ButtonBorderBrush" Color="#14EDEDED" />
+          <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="#1FEDEDED" />
+          <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="#1FEDEDED" />
+          <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="#0FEDEDED" />
+          <SolidColorBrush x:Key="ButtonForeground" Color="#EDEDED" />
+          <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#EDEDED" />
+          <SolidColorBrush x:Key="ButtonForegroundPressed" Color="#EDEDED" />
+          <SolidColorBrush x:Key="TextControlBackground" Color="#19191B" />
+          <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#1C1C1E" />
+          <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#19191B" />
+          <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="#161617" />
+          <SolidColorBrush x:Key="TextControlBorderBrush" Color="#21EDEDED" />
+          <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="#36EDEDED" />
+          <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="#12EDEDED" />
+          <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="#88888E" />
+          <SolidColorBrush x:Key="TextControlPlaceholderForegroundPointerOver" Color="#88888E" />
+          <SolidColorBrush x:Key="TextControlPlaceholderForegroundFocused" Color="#6E6E74" />
+          <SolidColorBrush x:Key="ComboBoxBackground" Color="#19191B" />
+          <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="#1E1E20" />
+          <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="#232325" />
+          <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="#21EDEDED" />
+          <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="#36EDEDED" />
+          <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="#36EDEDED" />
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
       <FontFamily x:Key="QcMonoFont">Cascadia Mono, Consolas, Menlo, DejaVu Sans Mono, monospace</FontFamily>
@@ -41,8 +185,10 @@
 
     <Style Selector="Window">
       <Setter Property="Background" Value="{DynamicResource QcContentBackground}" />
+      <Setter Property="Foreground" Value="{DynamicResource QcPrimaryText}" />
     </Style>
 
+    <!-- Type: 11 chips, 12 labels and meta, 13 secondary, 14 body, 16 dialog title, 20 window title. Weights 400/500. -->
     <Style Selector="TextBlock.label">
       <Setter Property="FontSize" Value="12" />
       <Setter Property="Margin" Value="0,0,0,4" />
@@ -51,72 +197,195 @@
     <Style Selector="TextBlock.muted">
       <Setter Property="Foreground" Value="{DynamicResource QcMutedText}" />
     </Style>
+    <Style Selector="TextBlock.secondary">
+      <Setter Property="Foreground" Value="{DynamicResource QcSecondaryText}" />
+    </Style>
     <Style Selector="TextBlock.heading">
       <Setter Property="FontSize" Value="20" />
-      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontWeight" Value="Medium" />
     </Style>
     <Style Selector="TextBlock.section">
       <Setter Property="FontSize" Value="14" />
-      <Setter Property="FontWeight" Value="SemiBold" />
+      <Setter Property="FontWeight" Value="Medium" />
       <Setter Property="Margin" Value="0,0,0,8" />
+    </Style>
+
+    <!-- Controls -->
+    <Style Selector="Button">
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="12,0" />
+      <Setter Property="MinHeight" Value="32" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.icon">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.ghost">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource QcHoverBrush}" />
+      <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
     <Style Selector="Button.danger">
       <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
     </Style>
-
-    <Style Selector="ListBox.commands ListBoxItem">
-      <Setter Property="Padding" Value="10,7" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="Margin" Value="0,1" />
+    <Style Selector="TextBox, ComboBox">
+      <Setter Property="CornerRadius" Value="8" />
     </Style>
-
-    <!-- Shell badge (ps / cmd / sh) -->
-    <Style Selector="Border.badge">
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="6,1" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Background" Value="#5B6270" />
-    </Style>
-    <Style Selector="Border.badge.ps">
-      <Setter Property="Background" Value="#2F5DA8" />
-    </Style>
-    <Style Selector="Border.badge.sh">
-      <Setter Property="Background" Value="#2E7D4F" />
-    </Style>
-    <Style Selector="Border.badge > TextBlock">
-      <Setter Property="Foreground" Value="White" />
-      <Setter Property="FontSize" Value="11" />
-      <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
-    </Style>
-
-    <!-- Warning / error message box -->
-    <Style Selector="Border.conflict">
-      <Setter Property="Background" Value="{DynamicResource QcWarningBackground}" />
-      <Setter Property="CornerRadius" Value="4" />
-      <Setter Property="Padding" Value="10,6" />
-      <Setter Property="Margin" Value="0,0,0,6" />
-    </Style>
-    <Style Selector="Border.conflict > TextBlock">
-      <Setter Property="Foreground" Value="{DynamicResource QcWarningText}" />
-    </Style>
-    <Style Selector="Border.conflict.error">
-      <Setter Property="Background" Value="{DynamicResource QcErrorBackground}" />
-    </Style>
-    <Style Selector="Border.conflict.error > TextBlock">
+    <Style Selector="MenuItem.danger">
       <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
     </Style>
 
-    <!-- Read-only code preview -->
+    <!-- Icon and label inside a button -->
+    <Style Selector="StackPanel.btn">
+      <Setter Property="Orientation" Value="Horizontal" />
+      <Setter Property="Spacing" Value="8" />
+    </Style>
+    <Style Selector="StackPanel.btn > TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="c|Icon">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Keycap: the signature detail. Shows the shortcut on the button it triggers. -->
+    <Style Selector="Border.keycap">
+      <Setter Property="BorderBrush" Value="{DynamicResource QcKeycapBorder}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="4,0" />
+      <Setter Property="MinHeight" Value="18" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.keycap > TextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Opacity" Value="0.72" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.accent Border.keycap">
+      <Setter Property="BorderBrush" Value="{DynamicResource QcKeycapOnAccentBorder}" />
+    </Style>
+
+    <!-- Command lists: rows step up a surface when selected, no accent fill. -->
+    <Style Selector="ListBox.commands ListBoxItem">
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Margin" Value="0,0,0,2" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.commands ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource QcHoverBrush}" />
+    </Style>
+    <Style Selector="ListBox.commands ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter, ListBox.commands ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter, ListBox.commands ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter, ListBox.commands ListBoxItem:selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource QcRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource QcBorderBrush}" />
+    </Style>
+    <Style Selector="ListBox.commands ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Foreground" Value="{DynamicResource QcPrimaryText}" />
+    </Style>
+    <Style Selector="ListBox.commands">
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!-- Segmented control (shell filter) -->
+    <Style Selector="ListBox.segments">
+      <Setter Property="Background" Value="{DynamicResource QcRaisedBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="2" />
+      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    </Style>
+    <Style Selector="ListBox.segments ListBoxItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="MinHeight" Value="28" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="Transparent" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource QcSecondaryText}" />
+    </Style>
+    <Style Selector="ListBox.segments ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{DynamicResource QcPrimaryText}" />
+    </Style>
+    <Style Selector="ListBox.segments ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter, ListBox.segments ListBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter, ListBox.segments ListBoxItem:selected:focus /template/ ContentPresenter#PART_ContentPresenter, ListBox.segments ListBoxItem:selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource QcContentBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource QcBorderBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource QcPrimaryText}" />
+    </Style>
+
+    <!-- Shell chip (ps / cmd / sh): quiet outline, the shell is told apart by the text colour only. -->
+    <Style Selector="Border.badge">
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Padding" Value="4,0" />
+      <Setter Property="MinHeight" Value="18" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="{DynamicResource QcBorderBrush}" />
+    </Style>
+    <Style Selector="Border.badge > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource QcShellCmd}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.badge.ps > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource QcShellPs}" />
+    </Style>
+    <Style Selector="Border.badge.sh > TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource QcShellSh}" />
+    </Style>
+
+    <!-- Warning / error notice -->
+    <Style Selector="Border.conflict">
+      <Setter Property="Background" Value="{DynamicResource QcWarningBackground}" />
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource QcWarningText}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="Margin" Value="0,0,0,8" />
+    </Style>
+
+    <Style Selector="Border.conflict.error">
+      <Setter Property="Background" Value="{DynamicResource QcErrorBackground}" />
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource QcErrorText}" />
+    </Style>
+
+
+    <!-- Code panels -->
     <Style Selector="Border.code">
       <Setter Property="Background" Value="{DynamicResource QcEditorBackground}" />
       <Setter Property="BorderBrush" Value="{DynamicResource QcBorderBrush}" />
       <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="CornerRadius" Value="6" />
-      <Setter Property="Padding" Value="10,8" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="ClipToBounds" Value="True" />
     </Style>
     <Style Selector="Border.code TextBlock, Border.code SelectableTextBlock">
       <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
       <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <!-- Usage as a terminal line, e.g. "> deploy <app> [<target>]" -->
+    <Style Selector="Border.terminal">
+      <Setter Property="Background" Value="{DynamicResource QcEditorBackground}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource QcBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="12,6" />
+    </Style>
+    <Style Selector="Border.terminal TextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource QcMonoFont}" />
+      <Setter Property="FontSize" Value="13" />
+    </Style>
+    <Style Selector="TextBlock.prompt">
+      <Setter Property="Foreground" Value="{DynamicResource QcAccentText}" />
     </Style>
   </Application.Styles>
 </Application>

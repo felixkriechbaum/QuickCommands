@@ -5,7 +5,7 @@
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
         Icon="/Assets/icon.ico">
   <StackPanel Margin="24" Spacing="16">
-    <TextBlock x:Name="TitleText" Classes="section" FontSize="16" />
+    <TextBlock x:Name="TitleText" Classes="section" FontSize="16" Margin="0" />
     <TextBlock x:Name="MessageText" TextWrapping="Wrap" />
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
       <Button x:Name="CancelButton" Click="OnCancel" IsCancel="True" />

@@ -1,5 +1,9 @@
 using System.ComponentModel;
+using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
+using Avalonia.Input;
 using Avalonia.Styling;
 using AvaloniaEdit.Rendering;
 using AvaloniaEdit.TextMate;
@@ -22,6 +26,10 @@ public partial class MainWindow : Window, IDialogService
     public MainWindow()
     {
         InitializeComponent();
+        AddKeyBinding(Shortcuts.SaveGesture, vm => vm.SaveCommand);
+        AddKeyBinding(Shortcuts.NewGesture, vm => vm.NewCommand);
+        AddKeyBinding(Shortcuts.DuplicateGesture, vm => vm.DuplicateCommand);
+        AddKeyBinding(Shortcuts.TryGesture, vm => vm.TryCommand);
 
         _registry = new RegistryOptions(IsDark ? ThemeName.DarkPlus : ThemeName.LightPlus);
         _textMate = Editor.InstallTextMate(_registry);
@@ -37,6 +45,17 @@ public partial class MainWindow : Window, IDialogService
     }
 
     private MainViewModel? ViewModel => DataContext as MainViewModel;
+
+    private void AddKeyBinding(KeyGesture gesture, Func<MainViewModel, ICommand> command)
+    {
+        var binding = new KeyBinding { Gesture = gesture };
+        binding.Bind(KeyBinding.CommandProperty, new Binding(nameof(DataContext))
+        {
+            Source = this,
+            Converter = new FuncValueConverter<object?, ICommand?>(dc => dc is MainViewModel vm ? command(vm) : null),
+        });
+        KeyBindings.Add(binding);
+    }
     private bool IsDark => ActualThemeVariant == ThemeVariant.Dark;
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -108,16 +127,8 @@ public partial class MainWindow : Window, IDialogService
             _editing.Script = Editor.Text;
     }
 
-    private void ApplyGrammar(ShellLanguage language)
-    {
-        var id = language switch
-        {
-            ShellLanguage.PowerShell => "powershell",
-            ShellLanguage.Cmd => "bat",
-            _ => "shellscript",
-        };
-        _textMate.SetGrammar(_registry.GetScopeByLanguageId(id));
-    }
+    private void ApplyGrammar(ShellLanguage language) =>
+        _textMate.SetGrammar(_registry.GetScopeByLanguageId(Controls.CodeView.Grammar(language)));
 
     protected override async void OnClosing(WindowClosingEventArgs e)
     {

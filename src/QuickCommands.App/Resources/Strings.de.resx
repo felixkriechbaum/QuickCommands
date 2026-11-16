@@ -4,13 +4,14 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
-  <data name="Main_Search" xml:space="preserve"><value>Suchen…</value></data>
+  <data name="Main_Search" xml:space="preserve"><value>Suchen</value></data>
   <data name="Main_FilterAll" xml:space="preserve"><value>Alle Shells</value></data>
-  <data name="Main_New" xml:space="preserve"><value>+ Neuer Command</value></data>
+  <data name="Main_FilterAllShort" xml:space="preserve"><value>Alle</value></data>
+  <data name="Main_New" xml:space="preserve"><value>Neuer Command</value></data>
   <data name="Main_Settings" xml:space="preserve"><value>Einstellungen</value></data>
   <data name="Main_Empty_Title" xml:space="preserve"><value>Kein Command ausgewählt</value></data>
-  <data name="Main_Empty_Hint" xml:space="preserve"><value>Wähle links einen Command aus oder lege einen neuen an (Strg+N).</value></data>
-  <data name="Main_NoCommands" xml:space="preserve"><value>Keine Commands gefunden.</value></data>
+  <data name="Main_Empty_Hint" xml:space="preserve"><value>Wähle links einen Command aus oder lege einen neuen an</value></data>
+  <data name="Main_NoCommands" xml:space="preserve"><value>Keine Commands gefunden</value></data>
   <data name="Main_Unsaved" xml:space="preserve"><value>Ungespeicherte Änderungen</value></data>
   <data name="Field_Name" xml:space="preserve"><value>Name</value></data>
   <data name="Field_NameHint" xml:space="preserve"><value>z. B. dev</value></data>
@@ -107,13 +108,13 @@ rem &quot;exit /b&quot; statt &quot;exit&quot; verwenden - sonst schliesst sich 
   <data name="Main_Import" xml:space="preserve"><value>Aus Profil importieren…</value></data>
   <data name="Main_History" xml:space="preserve"><value>Verlauf…</value></data>
   <data name="Action_Duplicate" xml:space="preserve"><value>Duplizieren</value></data>
-  <data name="Action_Try" xml:space="preserve"><value>▶ Ausprobieren</value></data>
+  <data name="Action_Try" xml:space="preserve"><value>Ausprobieren</value></data>
   <data name="Action_Close" xml:space="preserve"><value>Schließen</value></data>
-  <data name="Field_TryArgs" xml:space="preserve"><value>Argumente zum Ausprobieren</value></data>
+  <data name="Field_TryArgs" xml:space="preserve"><value>Testargumente</value></data>
   <data name="Field_Parameters" xml:space="preserve"><value>Parameter</value></data>
   <data name="Try_InvalidName" xml:space="preserve"><value>Gib dem Command zuerst einen gültigen Namen.</value></data>
   <data name="Try_Hint" xml:space="preserve"><value>Führt den aktuellen Editor-Stand in einem neuen Terminal aus – gespeichert wird nichts.</value></data>
-  <data name="Param_Add" xml:space="preserve"><value>+ Parameter</value></data>
+  <data name="Param_Add" xml:space="preserve"><value>Parameter hinzufügen</value></data>
   <data name="Param_None" xml:space="preserve"><value>Keine Parameter – das Script liest seine Argumente selbst ({0}).</value></data>
   <data name="Param_Name" xml:space="preserve"><value>Name</value></data>
   <data name="Param_Kind" xml:space="preserve"><value>Typ</value></data>

@@ -54,19 +54,23 @@ public sealed class KindOption
 
 public sealed class FilterOption
 {
-    private FilterOption(ShellLanguage? value, string label)
+    private FilterOption(ShellLanguage? value, string label, string shortLabel)
     {
         Value = value;
         Label = label;
+        ShortLabel = shortLabel;
     }
 
     public ShellLanguage? Value { get; }
     public string Label { get; }
 
+    /// <summary>Label for the segmented filter above the list: "All", then the shell badges.</summary>
+    public string ShortLabel { get; }
+
     public static IReadOnlyList<FilterOption> All { get; } =
     [
-        new(null, Strings.Main_FilterAll),
-        .. LanguageOption.All.Select(o => new FilterOption(o.Value, o.Label)),
+        new(null, Strings.Main_FilterAll, Strings.Main_FilterAllShort),
+        .. LanguageOption.All.Select(o => new FilterOption(o.Value, o.Label, o.Badge)),
     ];
 
     public bool Matches(ShellLanguage language) => Value is null || Value == language;

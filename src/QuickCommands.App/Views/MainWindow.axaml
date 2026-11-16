@@ -2,6 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:QuickCommands.App.ViewModels"
         xmlns:r="using:QuickCommands.App.Resources"
+        xmlns:app="using:QuickCommands.App"
+        xmlns:c="using:QuickCommands.App.Controls"
         xmlns:ae="using:AvaloniaEdit"
         x:Class="QuickCommands.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
@@ -10,12 +12,7 @@
         Width="1180" Height="780" MinWidth="860" MinHeight="560"
         WindowStartupLocation="CenterScreen">
 
-  <Window.KeyBindings>
-    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveCommand}" />
-    <KeyBinding Gesture="Ctrl+N" Command="{Binding NewCommand}" />
-    <KeyBinding Gesture="Ctrl+D" Command="{Binding DuplicateCommand}" />
-    <KeyBinding Gesture="F5" Command="{Binding TryCommand}" />
-  </Window.KeyBindings>
+  <!-- Key bindings are added in code with the platform's command key (⌘ on macOS). -->
 
   <Window.Styles>
     <Style Selector="TextBlock.status">
@@ -24,66 +21,98 @@
     <Style Selector="TextBlock.status.error">
       <Setter Property="Foreground" Value="{DynamicResource QcErrorText}" />
     </Style>
-    <Style Selector="Grid.paramrow TextBox, Grid.paramrow ComboBox">
-      <Setter Property="MinHeight" Value="30" />
-      <Setter Property="Padding" Value="8,4" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
     <Style Selector="Grid.paramrow ComboBox">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
+    <Style Selector="Grid.paramrow > TextBox, Grid.paramrow > ComboBox">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.colhead">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Foreground" Value="{DynamicResource QcMutedText}" />
+    </Style>
   </Window.Styles>
 
-  <Grid ColumnDefinitions="300,1,*">
+  <Grid ColumnDefinitions="280,1,*">
 
-    <!-- Sidebar: search, filter, list -->
+    <!-- Sidebar: brand, search, shell filter, list, create -->
     <Border Background="{DynamicResource QcSidebarBrush}">
-      <DockPanel Margin="16,16,16,16">
-        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,14">
-          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-            <Image Source="/Assets/icon.ico" Width="24" Height="24" />
-            <TextBlock Text="QuickCommands" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center" />
+      <DockPanel Margin="16">
+        <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+          <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+            <Image Source="/Assets/icon.ico" Width="20" Height="20" />
+            <TextBlock Text="QuickCommands" FontSize="16" FontWeight="Medium" VerticalAlignment="Center" />
           </StackPanel>
-          <Button Grid.Column="1" Content="{x:Static r:Strings.Main_More}" ToolTip.Tip="{x:Static r:Strings.Main_More}">
+          <Button Grid.Column="1" Classes="icon ghost" ToolTip.Tip="{x:Static r:Strings.Main_More}">
+            <c:Icon Data="{StaticResource IconEllipsis}" />
             <Button.Flyout>
               <MenuFlyout Placement="BottomEdgeAlignedRight">
-                <MenuItem Header="{x:Static r:Strings.Main_Import}" Command="{Binding ImportCommand}" />
-                <MenuItem Header="{x:Static r:Strings.Main_History}" Command="{Binding HistoryCommand}" />
+                <MenuItem Header="{x:Static r:Strings.Main_Import}" Command="{Binding ImportCommand}">
+                  <MenuItem.Icon><c:Icon Data="{StaticResource IconDownload}" /></MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="{x:Static r:Strings.Main_History}" Command="{Binding HistoryCommand}">
+                  <MenuItem.Icon><c:Icon Data="{StaticResource IconHistory}" /></MenuItem.Icon>
+                </MenuItem>
                 <Separator />
-                <MenuItem Header="{x:Static r:Strings.Main_Settings}" Command="{Binding OpenSettingsCommand}" />
+                <MenuItem Header="{x:Static r:Strings.Main_Settings}" Command="{Binding OpenSettingsCommand}">
+                  <MenuItem.Icon><c:Icon Data="{StaticResource IconSettings}" /></MenuItem.Icon>
+                </MenuItem>
               </MenuFlyout>
             </Button.Flyout>
           </Button>
         </Grid>
 
-        <TextBox DockPanel.Dock="Top" PlaceholderText="{x:Static r:Strings.Main_Search}" Text="{Binding SearchText}" />
-        <ComboBox DockPanel.Dock="Top" Margin="0,8,0,0" HorizontalAlignment="Stretch"
-                  ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding SelectedFilter}" />
+        <TextBox DockPanel.Dock="Top" PlaceholderText="{x:Static r:Strings.Main_Search}" Text="{Binding SearchText}">
+          <TextBox.InnerLeftContent>
+            <c:Icon Data="{StaticResource IconSearch}" Foreground="{DynamicResource QcMutedText}" Margin="12,0,0,0" />
+          </TextBox.InnerLeftContent>
+        </TextBox>
+
+        <ListBox DockPanel.Dock="Top" Classes="segments" Margin="0,8,0,0"
+                 ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding SelectedFilter}">
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Rows="1" />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+          <ListBox.ItemTemplate>
+            <DataTemplate x:DataType="vm:FilterOption">
+              <TextBlock Text="{Binding ShortLabel}" ToolTip.Tip="{Binding Label}" FontSize="13" />
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
 
         <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,Auto" Margin="0,12,0,0">
-          <Button Classes="accent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                  Content="{x:Static r:Strings.Main_New}" Command="{Binding NewCommand}" ToolTip.Tip="Ctrl+N" />
-          <Button Grid.Column="2" Content="{x:Static r:Strings.Main_FromTemplate}" Command="{Binding FromTemplateCommand}" />
+          <Button Classes="accent" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" Command="{Binding NewCommand}">
+            <StackPanel Classes="btn">
+              <c:Icon Data="{StaticResource IconPlus}" />
+              <TextBlock Text="{x:Static r:Strings.Main_New}" />
+              <Border Classes="keycap"><TextBlock Text="{x:Static app:Shortcuts.New}" /></Border>
+            </StackPanel>
+          </Button>
+          <Button Grid.Column="2" Classes="icon" Command="{Binding FromTemplateCommand}" ToolTip.Tip="{x:Static r:Strings.Main_FromTemplate}">
+            <c:Icon Data="{StaticResource IconLayoutTemplate}" />
+          </Button>
         </Grid>
 
-        <Panel Margin="0,10,0,0">
+        <Panel Margin="0,12,0,0">
           <TextBlock Classes="muted" Text="{x:Static r:Strings.Main_NoCommands}" IsVisible="{Binding HasNoVisibleItems}"
                      HorizontalAlignment="Center" Margin="0,24,0,0" />
-          <ListBox Classes="commands" ItemsSource="{Binding FilteredItems}" SelectedItem="{Binding Selected}" Background="Transparent">
+          <ListBox Classes="commands" ItemsSource="{Binding FilteredItems}" SelectedItem="{Binding Selected}">
             <ListBox.ItemTemplate>
               <DataTemplate x:DataType="vm:CommandItemViewModel">
                 <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
-                  <StackPanel Orientation="Horizontal" Spacing="6">
-                    <TextBlock Text="{Binding DisplayName}" FontFamily="{StaticResource QcMonoFont}" FontWeight="SemiBold" />
-                    <TextBlock Text="●" Foreground="#E8A33D" FontSize="11" VerticalAlignment="Center"
-                               IsVisible="{Binding IsDirty}" ToolTip.Tip="{x:Static r:Strings.Main_Unsaved}" />
-                    <TextBlock Text="!" Foreground="{DynamicResource QcErrorText}" FontWeight="Bold" VerticalAlignment="Center"
-                               IsVisible="{Binding HasSyntaxErrors}" ToolTip.Tip="{Binding SyntaxMessage}" />
+                  <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="{Binding DisplayName}" FontFamily="{StaticResource QcMonoFont}" FontWeight="Medium" />
+                    <Ellipse Width="6" Height="6" Fill="{DynamicResource QcAccentText}" VerticalAlignment="Center"
+                             IsVisible="{Binding IsDirty}" ToolTip.Tip="{x:Static r:Strings.Main_Unsaved}" />
+                    <c:Icon Data="{StaticResource IconCircleAlert}" Size="14" Foreground="{DynamicResource QcErrorText}"
+                            IsVisible="{Binding HasSyntaxErrors}" ToolTip.Tip="{Binding SyntaxMessage}" />
                   </StackPanel>
                   <Border Grid.Column="1" Classes="badge" Classes.ps="{Binding IsPowerShell}" Classes.sh="{Binding IsSh}">
                     <TextBlock Text="{Binding LanguageBadge}" />
                   </Border>
-                  <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Classes="muted" FontSize="12" Margin="0,3,0,0"
+                  <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Classes="muted" FontSize="12" Margin="0,4,0,0"
                              Text="{Binding Description}" IsVisible="{Binding HasDescription}" TextTrimming="CharacterEllipsis" />
                 </Grid>
               </DataTemplate>
@@ -97,12 +126,16 @@
 
     <!-- Detail -->
     <Panel Grid.Column="2">
-      <StackPanel IsVisible="{Binding !HasSelection}" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6">
-        <TextBlock Text="{x:Static r:Strings.Main_Empty_Title}" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
+      <StackPanel IsVisible="{Binding !HasSelection}" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8">
+        <TextBlock Text="{x:Static r:Strings.Main_Empty_Title}" FontSize="16" FontWeight="Medium" HorizontalAlignment="Center" />
         <TextBlock Classes="muted" Text="{x:Static r:Strings.Main_Empty_Hint}" HorizontalAlignment="Center" />
+        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,8,0,0">
+          <Border Classes="keycap"><TextBlock Text="{x:Static app:Shortcuts.New}" /></Border>
+          <TextBlock Classes="muted" Text="{x:Static r:Strings.Main_New}" VerticalAlignment="Center" />
+        </StackPanel>
       </StackPanel>
 
-      <Grid IsVisible="{Binding HasSelection}" Margin="24,18,24,16" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+      <Grid IsVisible="{Binding HasSelection}" Margin="24,20" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
         <Grid ColumnDefinitions="*,16,200">
           <StackPanel>
             <TextBlock Classes="label" Text="{x:Static r:Strings.Field_Name}" />
@@ -115,32 +148,37 @@
           </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Row="1" Margin="0,12,0,0">
+        <StackPanel Grid.Row="1" Margin="0,16,0,0">
           <TextBlock Classes="label" Text="{x:Static r:Strings.Field_Description}" />
           <TextBox Text="{Binding Selected.Description}" PlaceholderText="{x:Static r:Strings.Field_DescriptionHint}" />
         </StackPanel>
 
         <!-- Parameters -->
-        <StackPanel Grid.Row="2" Margin="0,12,0,0" Spacing="4">
+        <StackPanel Grid.Row="2" Margin="0,16,0,0">
           <Grid ColumnDefinitions="Auto,*,Auto">
             <TextBlock Classes="label" Text="{x:Static r:Strings.Field_Parameters}" VerticalAlignment="Center" Margin="0" />
             <TextBlock Grid.Column="1" Classes="muted" FontSize="12" Margin="12,0" VerticalAlignment="Center"
                        Text="{Binding Selected.VariableHint}" TextTrimming="CharacterEllipsis" FontFamily="{StaticResource QcMonoFont}" />
-            <Button Grid.Column="2" Content="{x:Static r:Strings.Param_Add}" Padding="10,3" Command="{Binding Selected.AddParameterCommand}" />
+            <Button Grid.Column="2" Command="{Binding Selected.AddParameterCommand}">
+              <StackPanel Classes="btn">
+                <c:Icon Data="{StaticResource IconPlus}" />
+                <TextBlock Text="{x:Static r:Strings.Param_Add}" />
+              </StackPanel>
+            </Button>
           </Grid>
-          <Grid ColumnDefinitions="120,8,104,8,150,8,100,8,64,8,*,4,32" IsVisible="{Binding Selected.HasParameters}" Margin="0,4,0,0">
-            <TextBlock Classes="muted" FontSize="11" Text="{x:Static r:Strings.Param_Name}" />
-            <TextBlock Grid.Column="2" Classes="muted" FontSize="11" Text="{x:Static r:Strings.Param_Kind}" />
-            <TextBlock Grid.Column="4" Classes="muted" FontSize="11" Text="{x:Static r:Strings.Param_Choices}" />
-            <TextBlock Grid.Column="6" Classes="muted" FontSize="11" Text="{x:Static r:Strings.Param_Default}" />
-            <TextBlock Grid.Column="8" Classes="muted" FontSize="11" Text="{x:Static r:Strings.Param_Required}" />
-            <TextBlock Grid.Column="10" Classes="muted" FontSize="11" Text="{x:Static r:Strings.Param_Description}" />
+          <Grid ColumnDefinitions="120,8,104,8,148,8,100,8,64,8,*,8,32" IsVisible="{Binding Selected.HasParameters}" Margin="0,12,0,4">
+            <TextBlock Classes="colhead" Text="{x:Static r:Strings.Param_Name}" />
+            <TextBlock Grid.Column="2" Classes="colhead" Text="{x:Static r:Strings.Param_Kind}" />
+            <TextBlock Grid.Column="4" Classes="colhead" Text="{x:Static r:Strings.Param_Choices}" />
+            <TextBlock Grid.Column="6" Classes="colhead" Text="{x:Static r:Strings.Param_Default}" />
+            <TextBlock Grid.Column="8" Classes="colhead" Text="{x:Static r:Strings.Param_Required}" HorizontalAlignment="Center" />
+            <TextBlock Grid.Column="10" Classes="colhead" Text="{x:Static r:Strings.Param_Description}" />
           </Grid>
-          <ScrollViewer MaxHeight="150" IsVisible="{Binding Selected.HasParameters}">
+          <ScrollViewer MaxHeight="160" IsVisible="{Binding Selected.HasParameters}">
             <ItemsControl ItemsSource="{Binding Selected.Parameters}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate x:DataType="vm:ParameterItemViewModel">
-                  <Grid Classes="paramrow" ColumnDefinitions="120,8,104,8,150,8,100,8,64,8,*,4,32" Margin="0,2">
+                  <Grid Classes="paramrow" ColumnDefinitions="120,8,104,8,148,8,100,8,64,8,*,8,32" Margin="0,0,0,8">
                     <TextBox Text="{Binding Name}" FontFamily="{StaticResource QcMonoFont}" PlaceholderText="name" />
                     <ComboBox Grid.Column="2" ItemsSource="{Binding KindOptions}" SelectedItem="{Binding Kind}" />
                     <TextBox Grid.Column="4" Text="{Binding ChoicesText}" IsVisible="{Binding IsChoice}" FontFamily="{StaticResource QcMonoFont}"
@@ -148,64 +186,101 @@
                     <TextBox Grid.Column="6" Text="{Binding Default}" IsEnabled="{Binding CanHaveDefault}" FontFamily="{StaticResource QcMonoFont}" />
                     <CheckBox Grid.Column="8" IsChecked="{Binding Required}" IsEnabled="{Binding CanBeRequired}" HorizontalAlignment="Center" />
                     <TextBox Grid.Column="10" Text="{Binding Description}" />
-                    <Button Grid.Column="12" Content="✕" Padding="0" Width="30" Height="30" HorizontalContentAlignment="Center"
-                            ToolTip.Tip="{x:Static r:Strings.Param_Remove}"
+                    <Button Grid.Column="12" Classes="icon ghost" ToolTip.Tip="{x:Static r:Strings.Param_Remove}"
                             Command="{Binding $parent[ItemsControl].((vm:CommandItemViewModel)DataContext).RemoveParameterCommand}"
-                            CommandParameter="{Binding}" />
+                            CommandParameter="{Binding}">
+                      <c:Icon Data="{StaticResource IconX}" Foreground="{DynamicResource QcMutedText}" />
+                    </Button>
                   </Grid>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </ScrollViewer>
-          <TextBlock Classes="muted" FontSize="12" FontFamily="{StaticResource QcMonoFont}" Text="{Binding Selected.UsagePreview}"
-                     IsVisible="{Binding Selected.HasParameters}" />
+
+          <!-- The command as you would type it -->
+          <Border Classes="terminal" Margin="0,8,0,0" HorizontalAlignment="Left" IsVisible="{Binding Selected.ShowUsageLine}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <TextBlock Classes="prompt" Text="&gt;" />
+              <TextBlock Text="{Binding Selected.UsageLine}" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+          </Border>
         </StackPanel>
 
         <!-- Conflicts and parameter problems -->
-        <StackPanel Grid.Row="3" Margin="0,10,0,0">
+        <StackPanel Grid.Row="3" Margin="0,12,0,0">
           <TextBlock Classes="muted" FontSize="12" Text="{x:Static r:Strings.Conflict_Checking}"
-                     IsVisible="{Binding IsCheckingConflicts}" Margin="0,0,0,6" />
+                     IsVisible="{Binding IsCheckingConflicts}" Margin="0,0,0,8" />
           <ItemsControl ItemsSource="{Binding Selected.Messages}">
             <ItemsControl.ItemTemplate>
               <DataTemplate x:DataType="vm:ConflictViewModel">
                 <Border Classes="conflict" Classes.error="{Binding IsError}">
-                  <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                  <Grid ColumnDefinitions="Auto,8,*">
+                    <c:Icon Data="{StaticResource IconTriangleAlert}" VerticalAlignment="Top" Margin="0,2,0,0" IsVisible="{Binding !IsError}" />
+                    <c:Icon Data="{StaticResource IconCircleAlert}" VerticalAlignment="Top" Margin="0,2,0,0" IsVisible="{Binding IsError}" />
+                    <TextBlock Grid.Column="2" Text="{Binding Message}" TextWrapping="Wrap" />
+                  </Grid>
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
           <CheckBox Content="{x:Static r:Strings.Field_AllowOverride}" IsChecked="{Binding Selected.AllowOverride}"
-                    IsVisible="{Binding Selected.ShowOverride}" />
+                    IsVisible="{Binding Selected.ShowOverride}" Margin="0,0,0,4" />
         </StackPanel>
 
         <!-- Script editor with "Try it" -->
-        <DockPanel Grid.Row="4" Margin="0,6,0,0">
-          <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,220,8,Auto" Margin="0,0,0,6">
+        <DockPanel Grid.Row="4" Margin="0,4,0,0">
+          <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,220,8,Auto" Margin="0,0,0,8">
             <TextBlock Classes="label" Text="{x:Static r:Strings.Field_Script}" VerticalAlignment="Bottom" />
             <TextBox Grid.Column="2" Text="{Binding Selected.TryArguments}" FontFamily="{StaticResource QcMonoFont}"
                      PlaceholderText="{x:Static r:Strings.Field_TryArgs}" ToolTip.Tip="{x:Static r:Strings.Try_Hint}" />
-            <Button Grid.Column="4" Content="{x:Static r:Strings.Action_Try}" Command="{Binding TryCommand}"
-                    IsEnabled="{Binding Selected.CanTry}" ToolTip.Tip="{x:Static r:Strings.Try_Hint}" />
+            <Button Grid.Column="4" Command="{Binding TryCommand}" IsEnabled="{Binding Selected.CanTry}" ToolTip.Tip="{x:Static r:Strings.Try_Hint}">
+              <StackPanel Classes="btn">
+                <c:Icon Data="{StaticResource IconPlay}" />
+                <TextBlock Text="{x:Static r:Strings.Action_Try}" />
+                <Border Classes="keycap"><TextBlock Text="{x:Static app:Shortcuts.Try}" /></Border>
+              </StackPanel>
+            </Button>
           </Grid>
-          <Border DockPanel.Dock="Bottom" Classes="conflict error" Margin="0,6,0,0" IsVisible="{Binding Selected.HasSyntaxErrors}">
-            <TextBlock Text="{Binding Selected.SyntaxMessage}" TextWrapping="Wrap" />
+          <Border DockPanel.Dock="Bottom" Classes="conflict error" Margin="0,8,0,0" IsVisible="{Binding Selected.HasSyntaxErrors}">
+            <Grid ColumnDefinitions="Auto,8,*">
+              <c:Icon Data="{StaticResource IconCircleAlert}" VerticalAlignment="Top" Margin="0,2,0,0" />
+              <TextBlock Grid.Column="2" Text="{Binding Selected.SyntaxMessage}" TextWrapping="Wrap" />
+            </Grid>
           </Border>
-          <Border BorderBrush="{DynamicResource QcBorderBrush}" BorderThickness="1" CornerRadius="6"
-                  Background="{DynamicResource QcEditorBackground}" ClipToBounds="True">
+          <Border Classes="code" Padding="0">
             <ae:TextEditor x:Name="Editor" ShowLineNumbers="True" FontFamily="{StaticResource QcMonoFont}" FontSize="14"
-                           Padding="6,6,0,0" Background="Transparent"
+                           Padding="8,8,0,0" Background="Transparent"
                            HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
           </Border>
         </DockPanel>
 
-        <Grid Grid.Row="5" ColumnDefinitions="Auto,8,Auto,*,Auto" Margin="0,14,0,0">
-          <Button Classes="danger" Content="{x:Static r:Strings.Action_Delete}" Command="{Binding DeleteCommand}" />
-          <Button Grid.Column="2" Content="{x:Static r:Strings.Action_Duplicate}" Command="{Binding DuplicateCommand}" ToolTip.Tip="Ctrl+D" />
+        <Grid Grid.Row="5" ColumnDefinitions="Auto,8,Auto,*,Auto" Margin="0,16,0,0">
+          <Button Command="{Binding DuplicateCommand}">
+            <StackPanel Classes="btn">
+              <c:Icon Data="{StaticResource IconCopy}" />
+              <TextBlock Text="{x:Static r:Strings.Action_Duplicate}" />
+              <Border Classes="keycap"><TextBlock Text="{x:Static app:Shortcuts.Duplicate}" /></Border>
+            </StackPanel>
+          </Button>
+          <Button Grid.Column="2" Classes="icon" ToolTip.Tip="{x:Static r:Strings.Main_More}">
+            <c:Icon Data="{StaticResource IconEllipsis}" />
+            <Button.Flyout>
+              <MenuFlyout Placement="TopEdgeAlignedLeft">
+                <MenuItem Classes="danger" Header="{x:Static r:Strings.Action_Delete}" Command="{Binding DeleteCommand}">
+                  <MenuItem.Icon><c:Icon Data="{StaticResource IconTrash}" Foreground="{DynamicResource QcErrorText}" /></MenuItem.Icon>
+                </MenuItem>
+              </MenuFlyout>
+            </Button.Flyout>
+          </Button>
           <TextBlock Grid.Column="3" Classes="status" Classes.error="{Binding StatusIsError}" Text="{Binding StatusMessage}"
-                     VerticalAlignment="Center" Margin="14,0" TextTrimming="CharacterEllipsis" />
-          <Button Grid.Column="4" Classes="accent" MinWidth="110" HorizontalContentAlignment="Center"
-                  Content="{x:Static r:Strings.Action_Save}" Command="{Binding SaveCommand}"
-                  IsEnabled="{Binding Selected.CanSave}" ToolTip.Tip="Ctrl+S" />
+                     VerticalAlignment="Center" Margin="16,0" TextTrimming="CharacterEllipsis" />
+          <Button Grid.Column="4" Classes="accent" MinWidth="112" HorizontalContentAlignment="Center"
+                  Command="{Binding SaveCommand}" IsEnabled="{Binding Selected.CanSave}">
+            <StackPanel Classes="btn">
+              <TextBlock Text="{x:Static r:Strings.Action_Save}" />
+              <Border Classes="keycap"><TextBlock Text="{x:Static app:Shortcuts.Save}" /></Border>
+            </StackPanel>
+          </Button>
         </Grid>
       </Grid>
     </Panel>
